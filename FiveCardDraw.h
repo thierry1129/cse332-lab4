@@ -23,7 +23,11 @@ protected:
 	size_t dealer;
 	Deck discard_deck;
 	Deck main_deck;
+	// this is an int tracking the current bet on table
 	unsigned int game_bet;
+	// this is an int trakcing how many players have folded in this round 
+	unsigned int folded_players;
+
 private:
 
 	int cardsPerHand = 5;
