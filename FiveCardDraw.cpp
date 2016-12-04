@@ -10,7 +10,7 @@
 
 
 FiveCardDraw::FiveCardDraw() : dealer(0), game_bet(0) {
-	pot = 0;
+
 	for (int suit = 0; suit < 4; ++suit) {
 		for (int rank = 0; rank < 13; ++rank) {
 			Card c = Card(static_cast<Card::Rank>(rank), static_cast<Card::Suit>(suit));
@@ -20,7 +20,15 @@ FiveCardDraw::FiveCardDraw() : dealer(0), game_bet(0) {
 }
 
 int FiveCardDraw::before_turn(Player &player) {
+	if (player.fold) { 
+		// this player is folding, end everything 
+		
+		
+		
+		return 0; }
 
+
+		
 	std::cout << endl << player.playerName << "'s hand: " << player.playerHand << endl;
 	bool discardInput = false;
 	size_t badCardNum = -1;
@@ -108,15 +116,16 @@ int FiveCardDraw::before_turn(Player &player) {
 }
 
 int FiveCardDraw::before_round() {
-
-	// set pot equal to zero
-
-	
+// before each round, we need to clear up everything, so we
+	// need to set pot equal to zero
+	pot = 0;
+	folded_players = 0;
 	int ante = 1;
 	for (auto a : playervec) {
 		if (a->chipCount >= ante) {
 
-
+			// revert all folded player to unfold position
+			a->fold = false;
 
 			add_pot(*a, ante);
 
@@ -138,9 +147,19 @@ int FiveCardDraw::before_round() {
 		pos = dealer + 1;
 
 	}
+	// need to ask player for bet before dealing them cards
+	// because this is bet phase number one 
 
+	// this couldbe wrong, when be
+	*bet_leader = *playervec[pos];
+	while (bet_leader != nullptr) {
 
-
+		for (auto b : playervec) {
+			bet(*b);
+		}
+	}
+	
+	
 	int totalCards = 5 * playervec.size();
 	while (totalCards > 0) {
 
@@ -178,8 +197,12 @@ int FiveCardDraw::before_round() {
 void FiveCardDraw::bet(Player &p) {
 
 
-	std::cout << "would you like to fold, yes for fold, no for continue" << endl;
 	
+	if (folded_players == playervec.size() - 1) {
+		// now all but one players have foldded
+		std::cout << "everyone else has folded, you won" << std::endl;
+
+	}
 	// a bool indicator whether current round has bet or not 
 	bool ifgamebet ;
 
@@ -187,15 +210,6 @@ void FiveCardDraw::bet(Player &p) {
 
 	bool playerroundfinished = false;
 
-	std::string iffold;
-	std::cin >> iffold;
-
-
-	if (iffold == "yes") {
-		cout << p.playerName << "     has folded" << endl;
-		playerroundfinished = true;
-		return;
-	}
 	if (ifgamebet) {
 
 
@@ -227,6 +241,8 @@ void FiveCardDraw::bet(Player &p) {
 
 			cout << p.playerName << "     has folded" << endl;
 			playerroundfinished = true;
+			p.fold = true;
+			folded_players += 1;
 			return;
 
 		}
@@ -350,9 +366,10 @@ void FiveCardDraw::bet(Player &p) {
 		std::cin >> action;
 
 		if (action == "fold") {
-
+			folded_players += 1;
 			cout << p.playerName << "     has folded" << endl;
 			playerroundfinished = true;
+			p.fold = true;
 			return;
 
 		}
@@ -430,6 +447,14 @@ int FiveCardDraw::round() {
 		if (after_turn(*p) != 0) {
 			return after_turn(*p);
 
+		}
+	}
+	//this could be wrong, i'M not sure whether bet_leader is null before this while loop 
+	// is called
+	while (bet_leader != nullptr) {
+
+		for (auto b : playervec) {
+			bet(*b);
 		}
 	}
 
