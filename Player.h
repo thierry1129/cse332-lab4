@@ -11,7 +11,7 @@ struct Player {
 	std::string playerName;
 
 	Hand playerHand;
-
+	bool fold = false;
 	unsigned int handWon;
 	unsigned int handLost;
 	unsigned int chipCount;
