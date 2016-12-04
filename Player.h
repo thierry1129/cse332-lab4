@@ -7,15 +7,16 @@
 #include<iostream>
 
 struct Player {
-    
-    std::string playerName;
-    
-    Hand playerHand;
-    
-    unsigned int handWon;
-    unsigned int handLost;
-    
-    Player(std::string name);
+	
+	std::string playerName;
+
+	Hand playerHand;
+
+	unsigned int handWon;
+	unsigned int handLost;
+	unsigned int chipCount;
+	unsigned int bet_put_in;
+	Player(std::string name);
 };
 
 
