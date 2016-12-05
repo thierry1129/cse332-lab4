@@ -24,10 +24,6 @@ class Hand {
 public:
     
     Hand() = default;
-    
-    
-    
-    
     Hand& operator=(const Hand& h);
     const int size();
     
@@ -35,17 +31,16 @@ public:
     
     static const char* handrankArray[9];
     Hand(vector<Card> c, int i) {
-        
         cardvec = c;
         handInt = i;
     }
-    
     bool operator==(const Hand& h);
     bool operator<(const Hand& h);
     std::string asString() const;
     Card& operator[](const size_t);
     
     void remove_card(const size_t);
+    void make_faceDown(const size_t);
     
 private:
     std::vector<Card> cardvec;

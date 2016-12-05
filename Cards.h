@@ -18,11 +18,17 @@ struct Card {
     
     Rank rank;
     Suit suit;
+    bool faceUp; //cards defaulted to be face up (ie, visible to other players)
     Card() = default;
     Card(Rank r, Suit s) {
         suit = s;
         rank = r;
-        
+        faceUp = true;
+    }
+    Card(Rank r, Suit s, bool facing) {
+        suit = s;
+        rank = r;
+        faceUp = facing;
     }
 };
 bool operator > (const Card& a, const Card& b);
