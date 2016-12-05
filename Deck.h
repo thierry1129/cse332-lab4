@@ -13,12 +13,14 @@
 class Hand;
 
 class FiveCardDraw;
+class SevenCardStud;
 class Deck {
     
     friend Hand& operator<<(Hand& h, Deck& d);
     friend std::ostream& operator<<(std::ostream& out, const Deck& deck);
     
     friend FiveCardDraw;
+    friend SevenCardStud;
 public:
     
     Deck() = default;

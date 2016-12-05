@@ -12,6 +12,7 @@
 
 class Deck;
 class FiveCardDraw;
+class SevenCardStud;
 
 class Hand {
     
@@ -20,6 +21,7 @@ class Hand {
     friend bool Hand::poker_rank(const Hand& a, const Hand& b);
     friend Hand checkHand(Hand &cards);
     friend FiveCardDraw;
+    friend SevenCardStud;
     
 public:
     
@@ -53,3 +55,4 @@ private:
 std::ostream& operator<<(std::ostream& out, const Hand& h);
 bool poker_rank(const Hand& a, const Hand& b);
 #endif
+
