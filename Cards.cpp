@@ -247,7 +247,7 @@ Hand check7Hand(Hand &prehand) {
 		int m = 0;
 		for (int x : v) {
 			
-			sevencardvec[x] = fivecardvec[m++];
+			fivecardvec[m++] = sevencardvec[x];
 			
 		}
 		//Hand a = 
