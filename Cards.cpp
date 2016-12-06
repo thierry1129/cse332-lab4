@@ -215,6 +215,61 @@ string cardToString(const Card & card) {
     
 }
 
+vector<int> people;
+vector<int> combination;
+vector<vector<int> > v2 ;
+
+void go(int offset, int k) {
+	if (k == 0) {
+		v2.push_back(combination);
+		return;
+	}
+	for (int i = offset; i <= people.size() - k; ++i) {
+		combination.push_back(people[i]);
+		go(i + 1, k - 1);
+		combination.pop_back();
+	}
+}
+
+Hand check7Hand(Hand &prehand) {
+	std::vector<Card> sevencardvec = prehand.cardvec;
+	std::vector<Card> fivecardvec;
+	std::vector <Hand> handvec;
+	int n = 7, k = 5;
+	//std::vec
+	for (int i = 0; i < n; ++i) { people.push_back(i + 1); }
+	go(0, k);
+
+	// v2 is a vector of differnent vectors 12345, 12346----they are;
+
+	for (const std::vector<int> &v : v2)
+	{
+		int m = 0;
+		for (int x : v) {
+			
+			sevencardvec[x] = fivecardvec[m++];
+			
+		}
+		//Hand a = 
+		
+		handvec.push_back(Hand(fivecardvec, 1));
+		
+		
+		//std::cout << x << ' ';
+		//std::cout << std::endl;
+	}
+
+
+	for (auto a : handvec) {
+		a = checkHand(a);
+	}
+		
+	std::sort(handvec.begin(), handvec.end(), poker_rank);
+	
+	return handvec[0];
+
+}
+
 
 Hand checkHand(Hand &prehand) {
     int handRankInt = 1;
