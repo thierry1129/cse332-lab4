@@ -6,6 +6,8 @@
 #include <vector>
 #include <iterator>
 #include <fstream>
+#include <stdio.h>
+#include <stdlib.h>
 
 
 
@@ -21,14 +23,9 @@ FiveCardDraw::FiveCardDraw() : dealer(0), game_bet(0) {
 
 int FiveCardDraw::before_turn(Player &player) {
 	if (player.fold) { 
-		// this player is folding, end everything 
-		
-		
-		
+		// this player is folding, end 
 		return 0; }
 
-
-		
 	std::cout << endl << player.playerName << "'s hand: " << player.playerHand << endl;
 	bool discardInput = false;
 	size_t badCardNum = -1;
@@ -45,6 +42,7 @@ int FiveCardDraw::before_turn(Player &player) {
 		}
 		catch (...) {
 			std::cout << "Invalid argument. Didn't enter a number" << endl;
+			++errorcount;
 		}
 		if (badCardNum <= 5 && badCardNum >= 0) {
 			discardInput = true;
@@ -151,13 +149,17 @@ int FiveCardDraw::before_round() {
 	// because this is bet phase number one 
 
 	// this couldbe wrong, when be
-	*bet_leader = *playervec[pos];
-	while (bet_leader != nullptr) {
-
-		for (auto b : playervec) {
-			bet(*b);
-		}
+	//*bet_leader = *playervec[pos];
+	Player * betIter = &(*playervec[pos]);
+	for (size_t i = 0; i < playervec.size(); ++i) {
+		*betIter = *playervec[(pos + i) % playervec.size()];
+		bet(*betIter);
 	}
+	//while (bet_leader != nullptr) {
+	//	for (auto b : playervec) {
+	//		bet(*b);
+	//	}
+	//}
 	
 	
 	int totalCards = 5 * playervec.size();
@@ -194,6 +196,7 @@ int FiveCardDraw::before_round() {
 	return 0;
 
 }
+
 void FiveCardDraw::bet(Player &p) {
 
 
@@ -204,7 +207,7 @@ void FiveCardDraw::bet(Player &p) {
 
 	}
 	// a bool indicator whether current round has bet or not 
-	bool ifgamebet ;
+	bool ifgamebet;
 
 	// a bool indicator whether this player has finished or not 
 
@@ -215,7 +218,7 @@ void FiveCardDraw::bet(Player &p) {
 
 
 		// 
-		if (p .playerName== (*bet_leader).playerName) {
+		if (p.playerName== (*bet_leader).playerName) {
 			ifgamebet = false;
 			bet_leader = nullptr;
 		}
@@ -239,15 +242,15 @@ void FiveCardDraw::bet(Player &p) {
 
 		if (action == "fold") {
 
-			cout << p.playerName << "     has folded" << endl;
+			cout << p.playerName << " has folded" << endl;
 			playerroundfinished = true;
 			p.fold = true;
-			folded_players += 1;
+			++folded_players;
 			return;
 
 		}
 		if (action == "call") {
-			// if not enough money  to call, going all in 
+			//if not enough money to call, going all in 
 			if (p.chipCount <= game_bet - p.bet_put_in) {
 				add_pot(p, p.chipCount);
 				playerroundfinished = true;
@@ -267,7 +270,7 @@ void FiveCardDraw::bet(Player &p) {
 		}
 		if(action == "reraise"){
 		// player trying to reraise another one chip, checking their pot 
-			if (p.chipCount < game_bet - p.bet_put_in + 1) {
+			if (p.chipCount < (game_bet - p.bet_put_in) + 1) {
 
 				add_pot(p, p.chipCount);
 				playerroundfinished = true;
@@ -276,11 +279,11 @@ void FiveCardDraw::bet(Player &p) {
 		}
 		
 
-			else if (p.chipCount == game_bet - p.bet_put_in + 1){
+			else if (p.chipCount == (game_bet - p.bet_put_in) + 1){
 				// reraise success, but already all in since no more chips left
 				add_pot(p, p.chipCount);
 				playerroundfinished = true;
-				game_bet += 1;
+				++game_bet;
 				bet_leader = &p;
 
 				std::cout << " you reraise the pot, but gone all in " << std::endl;
@@ -289,9 +292,9 @@ void FiveCardDraw::bet(Player &p) {
 			}
 			else {
 				// reraise success, 
-				add_pot(p, game_bet - p.bet_put_in + 1);
+				add_pot(p, (game_bet - p.bet_put_in) + 1);
 				playerroundfinished = true;
-				game_bet += 1;
+				++game_bet;
 				bet_leader = &p;
 
 				std::cout << " you reraise the pot by 1 chip " << std::endl;
@@ -305,7 +308,7 @@ void FiveCardDraw::bet(Player &p) {
 		if (action == "megareraise") {
 
 			// player trying to reraise another one chip, checking their pot 
-			if (p.chipCount < game_bet - p.bet_put_in + 2) {
+			if (p.chipCount < (game_bet - p.bet_put_in) + 2) {
 
 				add_pot(p, p.chipCount);
 				playerroundfinished = true;
@@ -314,7 +317,7 @@ void FiveCardDraw::bet(Player &p) {
 			}
 
 
-			else if (p.chipCount == game_bet - p.bet_put_in + 2) {
+			else if (p.chipCount == (game_bet - p.bet_put_in) + 2) {
 				// reraise success, but already all in since no more chips left
 				add_pot(p, p.chipCount);
 				playerroundfinished = true;
@@ -327,7 +330,7 @@ void FiveCardDraw::bet(Player &p) {
 			}
 			else {
 				// reraise success, 
-				add_pot(p, game_bet - p.bet_put_in + 2);
+				add_pot(p, (game_bet - p.bet_put_in) + 2);
 				playerroundfinished = true;
 				game_bet += 2;
 				bet_leader = &p;
@@ -451,11 +454,22 @@ int FiveCardDraw::round() {
 	}
 	//this could be wrong, i'M not sure whether bet_leader is null before this while loop 
 	// is called
-	while (bet_leader != nullptr) {
+	//while (bet_leader != nullptr) {
 
-		for (auto b : playervec) {
-			bet(*b);
-		}
+	//	for (auto b : playervec) {
+	//		bet(*b);
+	//	}
+	//}
+	size_t pos = 0;
+	if (dealer != (playervec.size() - 1)) {
+
+		pos = dealer + 1;
+
+	}
+	Player * betIter = &(*playervec[pos]);
+	for (size_t i = 0; i < playervec.size(); ++i) {
+		*betIter = *playervec[(pos + i) % playervec.size()];
+		bet(*betIter);
 	}
 
 	return 0;
@@ -480,15 +494,29 @@ bool FiveCardDraw::handCompare(std::shared_ptr<Player> a, std::shared_ptr<Player
 
 int FiveCardDraw::after_round() {
 
-	std::vector<std::shared_ptr<Player>> tempplayervec(playervec);
+	//std::vector<std::shared_ptr<Player>> tempplayervec(playervec);
+	std::vector<std::shared_ptr<Player>> tempplayervec;
+	for (size_t i = 0; i < playervec.size(); ++i) {
+		//Player did not fold
+		if ((*playervec[i]).fold) {
+			tempplayervec.push_back(playervec[i]);
+		}
+		else {
+			cout << (playervec[i])->playerName << " folded. They have " << (playervec[i])->handWon << " wins and " << (playervec[i])->handLost
+				<< " losses with a current chipCount" << (playervec[i])->chipCount << endl;
+		}
+	}
 
 	sort(tempplayervec.begin(), tempplayervec.end(), FiveCardDraw::handCompare);
 	auto winner = tempplayervec.begin();
-
+	int ties = 0; //number of Players that tied
 	for (auto player = tempplayervec.begin(); player != tempplayervec.end(); ++player) {
 		//if player has a better hand
+		//is this if statement even ever hit? How can the 2nd highest player be strictly better than the 1st highest? 
 		if (poker_rank((**player).playerHand, (**winner).playerHand)) {
 			(*(*player)).handWon++;
+			(*player)->chipCount += pot;
+			pot = 0;
 			//			std::cout << " player " << (*player)->playerName << " won with hand " << (*player)->playerHand
 			//				<< "won  " << (*player)->handWon << " times" << " and lost   " << (*player)->handLost
 			//				<< " times" << " handInt = " << (**player).playerHand.handInt << endl;
@@ -504,6 +532,14 @@ int FiveCardDraw::after_round() {
 			//and player and winner are both not better than each other
 			if (!(poker_rank((**player).playerHand, (**winner).playerHand)) && !(poker_rank((**winner).playerHand, (**player).playerHand))) {
 				(*(*player)).handWon++;
+				//if we haven't already determined the number of players that tied
+				if (ties == 0) {
+					while (!(poker_rank((**player).playerHand, (**winner).playerHand)) && !(poker_rank((**winner).playerHand, (**player).playerHand))) {
+						++ties;
+						++player;
+					}
+				}
+				(*player)->chipCount += pot/ties;
 				//				std::cout << " player " << (*player)->playerName << " won with hand " << (*player)->playerHand
 				//					<< "won  " << (*player)->handWon << " times" << " and lost   " << (*player)->handLost
 				//					<< " times" << " handInt = " << (**player).playerHand.handInt << endl;
@@ -537,7 +573,6 @@ int FiveCardDraw::after_round() {
 
 		}
 
-
 		// collect cards from discard deck
 
 		std::copy(discard_deck.cardvec.begin(), discard_deck.cardvec.end(), std::back_inserter(main_deck.cardvec));
@@ -545,6 +580,7 @@ int FiveCardDraw::after_round() {
 
 
 	}
+	pot = 0;
 	for (auto player = tempplayervec.begin(); player != tempplayervec.end(); ++player) {
 		std::copy((*player)->playerHand.cardvec.begin(), (*player)->playerHand.cardvec.end(), std::back_inserter(main_deck.cardvec));
 		(*player)->playerHand.cardvec.erase((*player)->playerHand.cardvec.begin(), (*player)->playerHand.cardvec.end());
