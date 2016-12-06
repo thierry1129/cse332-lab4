@@ -252,7 +252,7 @@ Hand check7Hand(Hand &prehand) {
 		}
 		//Hand a = 
 		
-		handvec.push_back(Hand(fivecardvec, 1));
+		handvec.push_back(checkHand(Hand(fivecardvec, 1)));
 		
 		
 		//std::cout << x << ' ';
@@ -260,9 +260,7 @@ Hand check7Hand(Hand &prehand) {
 	}
 
 
-	for (auto a : handvec) {
-		a = checkHand(a);
-	}
+	
 		
 	std::sort(handvec.begin(), handvec.end(), poker_rank);
 	
