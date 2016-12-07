@@ -22,6 +22,7 @@ class Hand {
     friend Hand checkHand(Hand &cards);
     friend FiveCardDraw;
     friend SevenCardStud;
+	friend Hand check7Hand(Hand &prehand);
     
 public:
     
