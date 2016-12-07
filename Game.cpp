@@ -21,14 +21,18 @@ std::shared_ptr<Game> Game::instance() {
 
 
 void Game::start_game(const std::string type) {
+	//std::cout << "test2.01" << endl;
 	if (gamePointer != NULL)
 	{
+		//std::cout << "test2.1" << endl;
 		throw "this game has already started";
 	}
 
 	std::string game_type = type;
-	if (!game_type.find("FiveCardDraw")) {
-		throw "unknown game";
+	if (game_type.find("FiveCardDraw")) {
+	//if (game_type!="FiveCardDraw") {
+		//std::cout << "test2.2" << endl;
+		throw "unknown game";		
 	}
 	gamePointer = std::make_shared<FiveCardDraw>();
 }
