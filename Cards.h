@@ -46,4 +46,5 @@ int getSuit(const char sChar, Card::Suit &suit);
 
 string cardToString(const Card & card);
 
+Hand check7Hand(Hand &prehand);
 #endif
