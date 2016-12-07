@@ -44,6 +44,7 @@ public:
 	virtual void add_pot(Player& p, unsigned int chipNum);
 	virtual void bankrupt(Player& p);
 	int size();
+	bool ifgamebet = false;
 };
 
 
