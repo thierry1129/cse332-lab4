@@ -410,6 +410,19 @@ int SevenCardStud::round() {
     return 0;
 }
 
+bool SevenCardStud::handCompare(std::shared_ptr<Player> a, std::shared_ptr<Player> b) {
+    if (a == NULL) {
+        return false;
+        
+    }
+    if (b == NULL) {
+        return true;
+    }
+    else {
+        return poker_rank(a->playerHand, b->playerHand);
+    }
+}
+
 int SevenCardStud::after_round() {
     
     //std::vector<std::shared_ptr<Player>> tempplayervec(playervec);
