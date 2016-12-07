@@ -241,34 +241,34 @@ Hand check7Hand(Hand &prehand) {
 	go(0, k);
 
 	// v2 is a vector of differnent vectors 12345, 12346----they are;
-	//std::cout << "test1" << endl;
+	//std::cout << "test1" << endl; - MW
 	for (const std::vector<int> &v : v2)
 	{
-		//std::cout << "test2" << endl;
+		//std::cout << "test2" << endl; - MW
 		int m = 0;
 		for (int x : v) {
-			//std::cout << "test3" << endl;
+			//std::cout << "test3" << endl; - MW
 			//std::cout << x << endl;
 			fivecardvec.push_back(sevencardvec[x]);
 
 		}
 		//Hand a = 
-		//std::cout << "test4" << endl;
+		//std::cout << "test4" << endl; - MW
 		handvec.push_back(checkHand(Hand(fivecardvec, 1)));
 		fivecardvec.clear();
 
 		//std::cout << x << ' ';
 		//std::cout << std::endl;
 	}
-	std::cout << "test5" << endl;
-	std::cout << handvec[0] << handvec[0].handInt << endl;
-	std::cout << handvec[20] << handvec[0].handInt << endl;
+	//std::cout << "test5" << endl; - MW
+	//std::cout << handvec[0] << handvec[0].handInt << endl; - MW
+	//std::cout << handvec[20] << handvec[0].handInt << endl; - MW
 
 
 
 
 	std::sort(handvec.begin(), handvec.end(), poker_rank);
-	std::cout << "test6" << endl;
+	//std::cout << "test6" << endl; - MW
 
 	return handvec[0];
 
