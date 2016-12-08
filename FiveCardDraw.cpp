@@ -551,6 +551,183 @@ bool FiveCardDraw::handCompare(std::shared_ptr<Player> a, std::shared_ptr<Player
 	}
 }
 
+int FiveCardDraw::after_round2() {
+
+
+	std::vector<std::shared_ptr<Player>> tempplayervec;
+	for (size_t i = 0; i < playervec.size(); ++i) {
+		//Player did not fold
+		if ((*playervec[i]).fold) {
+			tempplayervec.push_back(playervec[i]);
+		}
+		else {
+			std::cout << (playervec[i])->playerName << " folded. They have " << (playervec[i])->handWon << " wins and " << (playervec[i])->handLost
+				<< " losses with a current chipCount" << (playervec[i])->chipCount << std::endl;
+		}
+	}
+
+	sort(tempplayervec.begin(), tempplayervec.end(), FiveCardDraw::handCompare);
+	auto winner = tempplayervec.begin();
+	int winnernum = 0; //number of Players that tied
+
+	std::vector<std::shared_ptr<Player>> winnerplayervec;
+	for (auto player = tempplayervec.begin(); player != tempplayervec.end(); ++player) {
+		//auto winner = tempplayervec.begin();
+		if (player == tempplayervec.begin()) {
+
+			++winnernum;
+
+			(*(*player)).handWon++;
+			//(*player)->chipCount += pot;
+			//pot = 0;
+			winnerplayervec.push_back(*player);
+			std::cout << (*player)->playerName << " wins, has " << (*player)->handWon << " wins and " << (*player)->handLost
+				<< " losses" << " handInt = " << (**player).playerHand.handInt << "with a current chipCount" << (**player).chipCount << std::endl << std::endl;
+
+		}
+
+
+		else {
+
+			Hand winnerhand = (*winner)->playerHand;
+			if ((*player)->playerHand == winnerhand) {
+				++winnernum;
+				winnerplayervec.push_back(*player);
+				std::cout << (*player)->playerName << " wins, has " << (*player)->handWon << " wins and " << (*player)->handLost
+					<< " losses" << " handInt = " << (**player).playerHand.handInt << "with a current chipCount" << (**player).chipCount << std::endl << std::endl;
+
+
+			}
+			else {
+				(*(*player)).handLost++;
+
+				std::cout << (*player)->playerName << " lost, has " << (*player)->handWon << " wins and " << (*player)->handLost << " losses" << " handInt = " << (**player).playerHand.handInt << endl << endl;
+
+			}
+
+
+
+
+
+
+
+
+		}
+
+
+
+		for (auto winp : winnerplayervec) {
+			(*winp).chipCount += pot / winnernum;
+
+		}
+
+		// collect cards from discard deck
+	}
+		std::copy(discard_deck.cardvec.begin(), discard_deck.cardvec.end(), std::back_inserter(main_deck.cardvec));
+		discard_deck.cardvec.erase(discard_deck.cardvec.begin(), discard_deck.cardvec.end());
+
+
+	
+	pot = 0;
+	for (auto player = tempplayervec.begin(); player != tempplayervec.end(); ++player) {
+		std::copy((*player)->playerHand.cardvec.begin(), (*player)->playerHand.cardvec.end(), std::back_inserter(main_deck.cardvec));
+		(*player)->playerHand.cardvec.erase((*player)->playerHand.cardvec.begin(), (*player)->playerHand.cardvec.end());
+	}
+
+	// collect cards from winner hand
+
+	// now finished processing the cards, , after game, time to remove players
+
+	bool leave = true;
+	std::cout << "Enter 'yes' to leave, 'no' to stay." << endl;
+
+	//FIXME not sure ifleave should be char * or string
+	string ifleave;
+	std::cin >> ifleave;
+	while (leave) {
+		if (ifleave == "yes") {
+			std::cout << "Enter the name of player leaving..." << endl;
+			string leavename;
+			//std::getline(std::cin, leavename);
+			std::cin >> leavename;
+			//trying to add a remove player method 
+
+			std::shared_ptr<Player> leaveplayer = find_player(leavename);// leavename.c_str());
+			if (leaveplayer != NULL) {
+
+				std::ofstream ofs(leavename + ".txt", std::ofstream::out);
+				ofs << "Name " << (*leaveplayer).playerName << endl;
+				ofs << "Wins " << (*leaveplayer).handWon << endl;
+				ofs << "Losses " << (*leaveplayer).handLost << endl;
+				ofs << "chipCount " << (*leaveplayer).chipCount << endl;
+				ofs.close();
+				for (std::vector<std::shared_ptr<Player>>::iterator p = playervec.begin(); p != playervec.end(); ++p) {
+					if ((*p)->playerName == leavename) {
+						playervec.erase(p);
+						ifleave = "no";
+						break;
+					}
+				}
+			}
+
+
+
+
+
+		}
+
+		else if (ifleave == "no") {
+			leave = false;
+		}
+
+		else {
+			std::cout << "Please enter 'yes' or 'no'." << endl;
+			std::cin >> ifleave;
+
+		}
+	}
+
+	// after finding out who wants to leave, we need to find out who wants to join 
+
+
+	bool dojoin = true;
+	while (dojoin) {
+		std::cout << endl << "Do any players wish to join the game? (yes/no)" << endl;
+		string join;
+		std::cin >> join;
+		if (join == "yes") {
+
+			std::cout << "Enter name of joining player..." << endl;
+			string joinname;
+			//std::getline(std::cin, joinname);
+			std::cin >> joinname;
+
+			std::shared_ptr<Player> joinplayer = find_player(joinname.c_str());
+			if (joinplayer != NULL) {
+				// same name exists in the game
+				std::cout << "User name exists, please restart the process and enter a different name." << endl;
+			}
+			else {
+
+				add_player(joinname.c_str());
+
+			}
+		}
+
+		else if (join == "no") {
+			dojoin = false;
+
+		}
+
+		else {
+			std::cout << "Enter 'yes' or 'no' to decide if joining." << endl;
+		}
+	}
+	++dealer;
+	dealer = dealer % playervec.size();
+	return 0;
+}
+
 int FiveCardDraw::after_round() {
 
 	//std::vector<std::shared_ptr<Player>> tempplayervec(playervec);
