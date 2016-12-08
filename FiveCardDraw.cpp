@@ -592,6 +592,7 @@ int FiveCardDraw::after_round2() {
 			Hand winnerhand = (*winner)->playerHand;
 			if ((*player)->playerHand == winnerhand) {
 				++winnernum;
+				(*(*player)).handWon++;
 				winnerplayervec.push_back(*player);
 				std::cout << (*player)->playerName << " wins, has " << (*player)->handWon << " wins and " << (*player)->handLost
 					<< " losses" << " handInt = " << (**player).playerHand.handInt << "with a current chipCount" << (**player).chipCount << std::endl << std::endl;
