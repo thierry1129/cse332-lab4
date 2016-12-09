@@ -11,8 +11,8 @@
 
 
 
-FiveCardDraw::FiveCardDraw() : dealer(0), game_bet(0) {
-
+FiveCardDraw::FiveCardDraw() : game_bet(0) {
+	dealer = 0;
 	for (int suit = 0; suit < 4; ++suit) {
 		for (int rank = 0; rank < 13; ++rank) {
 			Card c = Card(static_cast<Card::Rank>(rank), static_cast<Card::Suit>(suit));
@@ -151,7 +151,7 @@ int FiveCardDraw::before_round() {
 	size_t pos = postDealer;
 
 	while ((!around || bet_leader != nullptr) && allFold == false) {
-		if (checks == playervec.size()) {
+		if (checks == playervec.size() - folded_players) {
 			break;
 		}
 		//MW std::cout << "game bet is: " << game_bet << endl;
@@ -390,7 +390,6 @@ void FiveCardDraw::bet(Player &p) {
 		std::cin >> action;
 		while (!playerroundfinished) {
 			if (action == "fold") {
-				++checks;
 				folded_players += 1;
 				std::cout << p.playerName << ": has folded" << endl;
 				playerroundfinished = true;
@@ -513,20 +512,41 @@ int FiveCardDraw::round() {
 		pos = dealer + 1;
 
 	}
+	while ((!around || bet_leader != nullptr) && allFold == false) {
+		if (checks == playervec.size()-folded_players) {
+			break;
+		}
+
+		bet(*playervec[pos]);
+		if (pos + 1 == playervec.size()) {
+			pos = 0;
+			//around = true;
+		}
+
+		else {
+			pos = (pos + 1) % playervec.size();
+		}
+		if (bet_leader != nullptr) {
+			if ((*playervec[pos]).playerName == (*bet_leader).playerName) {
+				around = true;
+			}
+		}
+	}
+	std::cout << "test" << endl;
 	//MW std::cout << "pre bet" << endl;
 	//MW std::cout << (*playervec[0]).playerHand << endl;
 	//MW std::cout << (*playervec[1]).playerHand << endl;
 	//MW std::cout << (*playervec[2]).playerHand << endl;
 	//Player * betIter = &(*playervec[pos]);
-	for (size_t i = 0; i < playervec.size(); ++i) {
-		//*betIter = *playervec[(pos + i) % playervec.size()];
-		//bet(*betIter);
-		bet((*playervec[(pos + i) % playervec.size()]));
-	}
-	//MW std::cout << "post bet" << endl;
-	//MW std::cout << (*playervec[0]).playerHand << endl;
-	//MW std::cout << (*playervec[1]).playerHand << endl;
-	//MW std::cout << (*playervec[2]).playerHand << endl;
+	//for (size_t i = 0; i < playervec.size(); ++i) {
+	//	//*betIter = *playervec[(pos + i) % playervec.size()];
+	//	//bet(*betIter);
+	//	bet((*playervec[(pos + i) % playervec.size()]));
+	//}
+	////MW std::cout << "post bet" << endl;
+	////MW std::cout << (*playervec[0]).playerHand << endl;
+	////MW std::cout << (*playervec[1]).playerHand << endl;
+	////MW std::cout << (*playervec[2]).playerHand << endl;
 
 	return 0;
 
@@ -555,6 +575,8 @@ int FiveCardDraw::after_round() {
 			tempplayervec.push_back(playervec[i]);
 		}
 		else {
+			++(playervec[i]->handLost);
+			playervec[i]->fold = false;
 			std::cout << (playervec[i])->playerName << " folded. They have " << (playervec[i])->handWon << " wins and " << (playervec[i])->handLost
 				<< " losses with a current chipCount" << (playervec[i])->chipCount << endl;
 		}
@@ -730,7 +752,6 @@ int FiveCardDraw::after_round() {
 	dealer = dealer % playervec.size();
 	return 0;
 }
-
 
 int FiveCardDraw::allFoldWinner() {
 	//just initialize winner to something for now
