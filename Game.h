@@ -50,6 +50,7 @@ public:
 	bool around = false;
 	bool allFold = false;
 	unsigned int checks = 0;
+	size_t dealer;
 };
 
 
