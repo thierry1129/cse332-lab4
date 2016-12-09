@@ -120,15 +120,14 @@ int FiveCardDraw::before_round() {
 	pot = 0;
 	folded_players = 0;
 	int ante = 1;
-	game_bet = ante;
 	for (auto a : playervec) {
 		if (a->chipCount >= ante) {
-
+			a->bet_put_in = 0;
 			// revert all folded player to unfold position
 			a->fold = false;
 
 			add_pot(*a, ante);
-			cout << a->playerName << " ante'd" << endl;
+			std::cout << a->playerName << " ante'd" << endl;
 		}
 
 
@@ -136,67 +135,48 @@ int FiveCardDraw::before_round() {
 			bankrupt(*a);
 		}
 	}
-	cout << "The current pot is: " << pot << endl;
+	std::cout << "The current pot is: " << pot << endl;
 	main_deck.shuffle();
 
 	// start position should be one past the dealer.
 
-	size_t pos = 0;
+	size_t postDealer = 0;
 	if (dealer != (playervec.size() - 1)) {
-
-		pos = dealer + 1;
-
-	}
-	
-	
-	int n = 0;
-	bool around = false;
-	
-	while (!around || bet_leader != nullptr) {
-
-		bet(*playervec[n]);
-		if (n + 1 == playervec.size()) {
-			around = true;
-		}
-
-		n = (n + 1) % playervec.size();
-
+		postDealer = dealer + 1;
 	}
 
 	// need to ask player for bet before dealing them cards
 	// because this is bet phase number one 
+	size_t pos = postDealer;
+	bool around = false;
 
-	// this couldbe wrong, when be
-	//*bet_leader = *playervec[pos];
-	/*
-	Player * betIter = &(*playervec[pos]);
-	for (size_t i = 0; i < playervec.size(); ++i) {
-		*betIter = *playervec[(pos + i) % playervec.size()];
-		bet(*betIter);
+	while (!around || bet_leader != nullptr) {
+
+		bet(*playervec[pos]);
+		if (pos + 1 == playervec.size()) {
+			pos = 0;
+			//around = true;
+		}
+
+		else {
+			pos = (pos + 1) % playervec.size();
+		}
+
 	}
-	//while (bet_leader != nullptr) {
-	//	for (auto b : playervec) {
-	//		bet(*b);
-	//	}
-	//}
-	
-	*/
+
+	//reset pos to postDealer
+	pos = postDealer;
 	int totalCards = 5 * playervec.size();
 	while (totalCards > 0) {
-
 		// now deal the card when there are still cards to deal.
-
-
 		(playervec[pos])->playerHand << main_deck;
-
-
 		pos = (pos + 1) % playervec.size();
 		--totalCards;
 
 	}
 	
 
-	vector<std::shared_ptr<Player>>::iterator posIter = playervec.begin() + (dealer + 1) % playervec.size();
+	vector<std::shared_ptr<Player>>::iterator posIter = (playervec.begin() + (postDealer % playervec.size()));
 	for (unsigned int i = 0; i < playervec.size(); ++i) {
 		try {
 			before_turn(**posIter);
@@ -218,179 +198,148 @@ int FiveCardDraw::before_round() {
 
 void FiveCardDraw::bet(Player &p) {
 
-
-	
 	if (folded_players == playervec.size() - 1) {
 		// now all but one players have folded
 		std::cout << p.playerName << ": everyone else has folded, you won!" << std::endl;
 		return;
 	}
-	// a bool indicator whether current round has bet or not 
-	//bool ifgamebet = false; //Made ifgamebet a class variable of Game -MW
-
 	// a bool indicator whether this player has finished or not 
 
 	bool playerroundfinished = false;
 
 	if (ifgamebet) {
-
-
-
-		// 
-		if (p.playerName== (*bet_leader).playerName) {
+		if (p.playerName == (*bet_leader).playerName) {
 			ifgamebet = false;
 			bet_leader = nullptr;
-		}
-
-
-
-		if (playerroundfinished) {
 			return;
 		}
-
 
 
 		// now there is someone betting, you can fold, call, or reraise, or megareraise ;
 		// reraise, extra one bet, 
 		// mega reraise, extra two bet 
-
-
-		cout << p.playerName << ": there is a bet out there , do you want to fold, call , or reraise, or megareraise " << endl;
+		std::cout << p.playerName << ": there is a bet out there , do you want to fold, call , or reraise, or megareraise " << endl;
 		std::string action;
 		std::cin >> action;
-
-		if (action == "fold") {
-
-			cout << p.playerName << " has folded" << endl;
-			playerroundfinished = true;
-			p.fold = true;
-			++folded_players;
-			return;
-
-		}
-		if (action == "call") {
-			//if not enough money to call, going all in 
-			if (p.chipCount <= game_bet - p.bet_put_in) {
-				add_pot(p, p.chipCount);
+		while (!playerroundfinished) {
+			if (action == "fold") {
+				std::cout << p.playerName << " has folded" << endl;
 				playerroundfinished = true;
-				std::cout << p.playerName << ": don't have enough money to call, going all in for you " << std::endl;
-				
+				p.fold = true;
+				++folded_players;
+				return;
+
+			}
+			else if (action == "call") {
+				//if not enough money to call, going all in 
+				if (p.chipCount <= game_bet - p.bet_put_in) {
+					add_pot(p, p.chipCount);
+					playerroundfinished = true;
+					std::cout << p.playerName << ": don't have enough money to call, going all in for you " << std::endl;
+
+				}
+
+				else {
+					// now just call regularly 
+					add_pot(p, game_bet - p.bet_put_in);
+					std::cout << p.playerName << ", you chose to call, putting in extra   " << game_bet - p.bet_put_in << "chips for you" << endl;
+					playerroundfinished = true;
+				}
+
+			}
+			else if (action == "reraise") {
+				// player trying to reraise another one chip, checking their pot 
+				if (p.chipCount < (game_bet - p.bet_put_in) + 1) {
+
+					add_pot(p, p.chipCount);
+					playerroundfinished = true;
+
+					std::cout << p.playerName << ": going all in for you " << std::endl;
+					std::cout << p.playerName << ": now the current bet is  " << game_bet << std::endl;
+					std::cout << "The current pot is: " << pot << endl;
+				}
+
+
+				else if (p.chipCount == (game_bet - p.bet_put_in) + 1) {
+					// reraise success, but already all in since no more chips left
+					add_pot(p, p.chipCount);
+					playerroundfinished = true;
+					++game_bet;
+					bet_leader = &p;
+					ifgamebet = true;
+					std::cout << p.playerName << ": you reraise the pot, but gone all in " << std::endl;
+					std::cout << p.playerName << ": now the current bet is  " << game_bet << std::endl;
+					std::cout << "The current pot is: " << pot << endl;
+				}
+				else {
+					// reraise success, 
+					add_pot(p, (game_bet - p.bet_put_in) + 1);
+					playerroundfinished = true;
+					++game_bet;
+					bet_leader = &p;
+					ifgamebet = true;
+					std::cout << p.playerName << ": you reraise the pot by 1 chip " << std::endl;
+					std::cout << p.playerName << ": now the current bet is  " << game_bet << std::endl;
+					std::cout << "The current pot is: " << pot << endl;
+				}
+
+
 			}
 
+			else if (action == "megareraise") {
+
+				// player trying to reraise another one chip, checking their pot 
+				if (p.chipCount < (game_bet - p.bet_put_in) + 2) {
+
+					add_pot(p, p.chipCount);
+					playerroundfinished = true;
+
+					std::cout << p.playerName << ": going all in for you " << std::endl;
+					std::cout << p.playerName << ": now the current bet is  " << game_bet << std::endl;
+					std::cout << "The current pot is: " << pot << endl;
+					if (p.chipCount > (game_bet - p.bet_put_in)) {
+						bet_leader = &p;
+					}
+				}
+
+
+				else if (p.chipCount == (game_bet - p.bet_put_in) + 2) {
+					// reraise success, but already all in since no more chips left
+					add_pot(p, p.chipCount);
+					playerroundfinished = true;
+					game_bet += 2;
+					bet_leader = &p;
+					ifgamebet = true;
+					std::cout << p.playerName << ": you reraise the pot, but gone all in " << std::endl;
+					std::cout << p.playerName << ": now the current bet is  " << game_bet << std::endl;
+					std::cout << "The current pot is: " << pot << endl;
+				}
+				else {
+					// reraise success, 
+					add_pot(p, (game_bet - p.bet_put_in) + 2);
+					playerroundfinished = true;
+					game_bet += 2;
+					bet_leader = &p;
+					std::cout << p.playerName << ": you reraise the pot by 2 chip " << std::endl;
+					std::cout << p.playerName << ": now the current bet is  " << game_bet << std::endl;
+					std::cout << "The current pot is: " << pot << endl;
+					ifgamebet = true;
+				}
+
+
+			}
 			else {
-				// now just call regularly 
-				add_pot(p, game_bet - p.bet_put_in);
-				
-				std::cout << p.playerName << ", you chose to call, putting in extra   " << game_bet - p.bet_put_in << "chips for you" << endl;
-
-
+				std::cout << "Please enter in a valid action: fold, call, reraise, or megareraise" << endl;
+				std::cin >> action;
 			}
-
-		}
-		if(action == "reraise"){
-		// player trying to reraise another one chip, checking their pot 
-			if (p.chipCount < (game_bet - p.bet_put_in) + 1) {
-
-				add_pot(p, p.chipCount);
-				playerroundfinished = true;
-
-				std::cout << p.playerName << ": going all in for you " << std::endl;
-				std::cout << p.playerName << ": now the current bet is  " << game_bet << std::endl;
-				cout << "The current pot is: " << pot << endl;
-		}
-		
-
-			else if (p.chipCount == (game_bet - p.bet_put_in) + 1){
-				// reraise success, but already all in since no more chips left
-				add_pot(p, p.chipCount);
-				playerroundfinished = true;
-				++game_bet;
-				bet_leader = &p;
-
-				std::cout << p.playerName << ": you reraise the pot, but gone all in " << std::endl;
-				std::cout << p.playerName << ": now the current bet is  " << game_bet<<std::endl;
-				cout << "The current pot is: " << pot << endl;
-
-				ifgamebet = true;
-			}
-			else {
-				// reraise success, 
-				add_pot(p, (game_bet - p.bet_put_in) + 1);
-				playerroundfinished = true;
-				++game_bet;
-				bet_leader = &p;
-
-				std::cout << p.playerName << ": you reraise the pot by 1 chip " << std::endl;
-				std::cout << p.playerName << ": now the current bet is  " << game_bet << std::endl;
-				cout << "The current pot is: " << pot << endl;
-
-				ifgamebet = true;
-			}
-
-
-		}
-
-		if (action == "megareraise") {
-
-			// player trying to reraise another one chip, checking their pot 
-			if (p.chipCount < (game_bet - p.bet_put_in) + 2) {
-
-				add_pot(p, p.chipCount);
-				playerroundfinished = true;
-
-				std::cout << p.playerName << ": going all in for you " << std::endl;
-				std::cout << p.playerName << ": now the current bet is  " << game_bet << std::endl;
-				cout << "The current pot is: " << pot << endl;
-
-			}
-
-
-			else if (p.chipCount == (game_bet - p.bet_put_in) + 2) {
-				// reraise success, but already all in since no more chips left
-				add_pot(p, p.chipCount);
-				playerroundfinished = true;
-				game_bet += 2;
-				bet_leader = &p;
-
-				std::cout << p.playerName << ": you reraise the pot, but gone all in " << std::endl;
-				std::cout << p.playerName << ": now the current bet is  " << game_bet << std::endl;
-				cout << "The current pot is: " << pot << endl;
-				ifgamebet = true;
-			}
-			else {
-				// reraise success, 
-				add_pot(p, (game_bet - p.bet_put_in) + 2);
-				playerroundfinished = true;
-				game_bet += 2;
-				bet_leader = &p;
-
-				std::cout << p.playerName << ": you reraise the pot by 2 chip " << std::endl;
-				std::cout << p.playerName << ": now the current bet is  " << game_bet << std::endl;
-				cout << "The current pot is: " << pot << endl;
-				ifgamebet = true;
-			}
-
-
-		}
-		else {
-			throw "please enter in valid strings, if you want to fold, call, or reraise";
 		}
 	}
-
-
-
 
 	else {// now there is no bet on the table, you can either bet,check or fold
 		// bet will bet one chip, megabet bets two chips
 
-		//is this still necessary?
-		if (playerroundfinished) {
-
-			return;
-		}
-
 		if (p.chipCount == 0) {
-			std::cout << p.playerName << ": no more chips, must check " << std::endl;
+			std::cout << p.playerName << ": no more chips, must check" << std::endl;
 			return;
 		}
 		
@@ -400,26 +349,26 @@ void FiveCardDraw::bet(Player &p) {
 		while (!playerroundfinished) {
 			if (action == "fold") {
 				folded_players += 1;
-				cout << p.playerName << ": has folded" << endl;
+				std::cout << p.playerName << ": has folded" << endl;
 				playerroundfinished = true;
 				p.fold = true;
 				return;
 
 			}
 			else if (action == "check") {
-				cout << p.playerName << ": has checked" << endl;
+				std::cout << p.playerName << ": has checked" << endl;
 				std::cout << p.playerName << ": now the current bet is  " << game_bet << std::endl;
-				cout << "The current pot is: " << pot << endl;
+				std::cout << "The current pot is: " << pot << endl;
 				playerroundfinished = true;
 				return;
 
 			}
 			else if (action == "bet") {
-				cout << p.playerName << ": bet one chip" << endl;
+				std::cout << p.playerName << ": bet one chip" << endl;
 				game_bet += 1;
 				add_pot(p, 1);
 				std::cout << p.playerName << ": now the current bet is  " << game_bet << std::endl;
-				cout << "The current pot is: " << pot << endl;
+				std::cout << "The current pot is: " << pot << endl;
 				bet_leader = &p;
 
 				ifgamebet = true;
@@ -434,13 +383,17 @@ void FiveCardDraw::bet(Player &p) {
 					std::cout << p.playerName << ": chip not enough , betting one now" << std::endl;
 					action = "bet";
 					std::cout << p.playerName << ": now the current bet is  " << game_bet << std::endl;
-					cout << "The current pot is: " << pot << endl;
+					std::cout << "The current pot is: " << pot << endl;
+					game_bet += 1;
+					add_pot(p, 1);
 				}
-				cout << p.playerName << ": bet two chip" << endl;
-				std::cout << p.playerName << ": now the current bet is  " << game_bet << std::endl;
-				cout << "The current pot is: " << pot << endl;
-				game_bet += 2;
-				add_pot(p, 2);
+				else {
+					std::cout << p.playerName << ": bet two chip" << endl;
+					std::cout << p.playerName << ": now the current bet is  " << game_bet << std::endl;
+					std::cout << "The current pot is: " << pot << endl;
+					game_bet += 2;
+					add_pot(p, 2);
+				}
 				bet_leader = &p;
 
 				ifgamebet = true;
@@ -480,7 +433,7 @@ int FiveCardDraw::turn(Player &p) {
 }
 
 int FiveCardDraw::after_turn(Player &p) {
-	cout << p.playerName << " " << p.playerHand << endl;
+	std::cout << p.playerName << " " << p.playerHand << endl;
 	return 0;
 }
 
@@ -496,14 +449,7 @@ int FiveCardDraw::round() {
 
 		}
 	}
-	//this could be wrong, i'M not sure whether bet_leader is null before this while loop 
-	// is called
-	//while (bet_leader != nullptr) {
 
-	//	for (auto b : playervec) {
-	//		bet(*b);
-	//	}
-	//}
 	size_t pos = 0;
 	if (dealer != (playervec.size() - 1)) {
 
@@ -517,9 +463,6 @@ int FiveCardDraw::round() {
 	}
 
 	return 0;
-
-
-
 
 }
 
@@ -546,7 +489,7 @@ int FiveCardDraw::after_round() {
 			tempplayervec.push_back(playervec[i]);
 		}
 		else {
-			cout << (playervec[i])->playerName << " folded. They have " << (playervec[i])->handWon << " wins and " << (playervec[i])->handLost
+			std::cout << (playervec[i])->playerName << " folded. They have " << (playervec[i])->handWon << " wins and " << (playervec[i])->handLost
 				<< " losses with a current chipCount" << (playervec[i])->chipCount << endl;
 		}
 	}
@@ -564,7 +507,7 @@ int FiveCardDraw::after_round() {
 			//			std::cout << " player " << (*player)->playerName << " won with hand " << (*player)->playerHand
 			//				<< "won  " << (*player)->handWon << " times" << " and lost   " << (*player)->handLost
 			//				<< " times" << " handInt = " << (**player).playerHand.handInt << endl;
-			cout << (*player)->playerName << " wins, has " << (*player)->handWon << " wins and " << (*player)->handLost
+			std::cout << (*player)->playerName << " wins, has " << (*player)->handWon << " wins and " << (*player)->handLost
 				<< " losses" << " handInt = " << (**player).playerHand.handInt << "with a current chipCount"<<(**player).chipCount<<endl << endl;
 
 			//HERE
@@ -587,7 +530,7 @@ int FiveCardDraw::after_round() {
 				//				std::cout << " player " << (*player)->playerName << " won with hand " << (*player)->playerHand
 				//					<< "won  " << (*player)->handWon << " times" << " and lost   " << (*player)->handLost
 				//					<< " times" << " handInt = " << (**player).playerHand.handInt << endl;
-				cout << (*player)->playerName << " wins, has " << (*player)->handWon << " wins and " << (*player)->handLost << " losses" << " handInt = " << (**player).playerHand.handInt << endl << endl;
+				std::cout << (*player)->playerName << " wins, has " << (*player)->handWon << " wins and " << (*player)->handLost << " losses" << " handInt = " << (**player).playerHand.handInt << endl << endl;
 			}
 			//Player is worse
 			else {
@@ -595,7 +538,7 @@ int FiveCardDraw::after_round() {
 				//				std::cout << " player " << (*player)->playerName << " lost with hand " << (*player)->playerHand
 				//					<< "won  " << (*player)->handWon << " times" << " and lost   " << (*player)->handLost
 				//					<< " times" << " handInt = " << (**player).playerHand.handInt << endl;
-				cout << (*player)->playerName << " lost, has " << (*player)->handWon << " wins and " << (*player)->handLost << " losses" << " handInt = " << (**player).playerHand.handInt << endl << endl;
+				std::cout << (*player)->playerName << " lost, has " << (*player)->handWon << " wins and " << (*player)->handLost << " losses" << " handInt = " << (**player).playerHand.handInt << endl << endl;
 			}
 
 
@@ -610,7 +553,7 @@ int FiveCardDraw::after_round() {
 			//			std::cout << " player " << (*player)->playerName << " lost with hand " << (*player)->playerHand
 			//				<< "won  " << (*player)->handWon << " times" << " and lost   " << (*player)->handLost
 			//				<< " times" << " handInt = " << (**player).playerHand.handInt << endl;
-			cout << (*player)->playerName << " lost, has " << (*player)->handWon << " wins and " << (*player)->handLost
+			std::cout << (*player)->playerName << " lost, has " << (*player)->handWon << " wins and " << (*player)->handLost
 				<< " losses" << " handInt = " << (**player).playerHand.handInt << endl << endl;
 			//HERE
 
@@ -665,10 +608,6 @@ int FiveCardDraw::after_round() {
 					}
 				}
 			}
-
-
-
-
 
 		}
 
