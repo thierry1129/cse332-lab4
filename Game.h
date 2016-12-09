@@ -28,6 +28,7 @@ public:
 
 	static std::shared_ptr<Game> instance();
 	static void start_game(const std::string type);
+    static void start_game7(const std::string type); //added for sevenCardStud
 	static void stop_game();
 
 	void add_player(const std::string name);
