@@ -12,10 +12,6 @@
 #include <chrono>
 #include <ostream>
 
-
-
-
-
 Deck::Deck(const char* &filename) {
     
     int loadErr =
@@ -35,8 +31,7 @@ int Deck::load(const char* &filename) {
     std::vector<Card> cardvec2;
     
     
-    if (ifs.is_open())
-    {
+    if (ifs.is_open()) {
         
         while (getline(ifs, line)) {
             if (line.empty()) {
@@ -70,12 +65,6 @@ int Deck::load(const char* &filename) {
                         break;
                     }
                     
-                    
-                    
-                    
-                    
-                    
-                    
                     Card::Rank rank;
                     Card::Suit suit;
                     /*  call the helper method here to get the proper format for the suits and ranks */
@@ -84,8 +73,6 @@ int Deck::load(const char* &filename) {
                     int rankerr = getRank(readRank, rank);
                     
                     if (rankerr != 0 || suiterr != 0) {
-                        
-                        
                         
                         if (rankerr != 0) {
                             cout << "there is an error with your rank, reading the next card now " << endl;
@@ -109,36 +96,24 @@ int Deck::load(const char* &filename) {
                     }
                 }
                 
-                
                 cardvec.insert(cardvec.end(), cardvec2.begin(), cardvec2.end());
                 cardcount = 0;
                 cardvec2.clear();
                 
                 
-                
             }
-            
-            
             
         }
         
-        
-        
-        
     }
     
-    
     return a;
-    
     
 }
 
 
-
-
-
 void Deck::shuffle() {
-    auto seed = std::chrono::system_clock::now().time_since_epoch().count();
+    unsigned int seed = (unsigned int) std::chrono::system_clock::now().time_since_epoch().count();
     
     std::shuffle(cardvec.begin(), cardvec.end(), std::default_random_engine(seed));
 }
