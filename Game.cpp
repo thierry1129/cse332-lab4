@@ -67,6 +67,11 @@ void Game::add_pot(Player& p, unsigned int amount) {
 	pot += amount;
 }
 
+void Game::anteUp(Player& p) {
+	p.chipCount -= 1;
+	pot += 1;
+}
+
 void Game::bankrupt(Player &p) {
 	
 		std::cout << "you are bankrupt, reset chip type yes, quit game type no" << std::endl;
