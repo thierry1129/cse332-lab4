@@ -29,11 +29,11 @@ const int Hand::size() {
 std::string Hand::asString() const { //modified for lab 4 to print asterisk if card is face down
     std::string to_return = "\n";
     for (Card c : cardvec) {
-        if (c.faceUp = true) {
+        if (c.faceUp == true) {
             to_return += cardToString(c) + "\n";
         }
         else {
-            to_return += "* + \n";
+            to_return += "*\n";
         }
     }
     return to_return;
