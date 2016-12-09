@@ -8,10 +8,11 @@
 #include <vector>
 
 Player::Player(std::string name) :
-handWon(0), handLost(0) {
+handWon(0), handLost(0), chipCount(20) {
     playerName = name;
     std::ifstream ifs(name);
     std::string line;
+	chipCount = 20;
     // for now I asssume in the player file the lines contains name, won, lost (string, int, int)
     if (ifs.is_open()) {
         //int to record if Name, Wins, and Losses have been read in
