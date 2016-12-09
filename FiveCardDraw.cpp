@@ -22,94 +22,95 @@ FiveCardDraw::FiveCardDraw() : dealer(0), game_bet(0) {
 }
 
 int FiveCardDraw::before_turn(Player &player) {
-	if (player.fold) { 
+	if (player.fold) {
 		// this player is folding, end 
 		return 0; 
 	}
+	else {
+		std::cout << endl << player.playerName << "'s hand: " << player.playerHand << endl;
+		bool discardInput = false;
+		size_t badCardNum = -1;
+		while (discardInput == false) {
+			std::cout << "How many cards would you like to discard?" << endl;
 
-	std::cout << endl << player.playerName << "'s hand: " << player.playerHand << endl;
-	bool discardInput = false;
-	size_t badCardNum = -1;
-	while (discardInput == false) {
-		std::cout << "How many cards would you like to discard?" << endl;
+			std::string response;
+			std::cin >> response;
 
-		std::string response;
-		std::cin >> response;
+			int errorcount = 0;
 
-		int errorcount = 0;
-
-		try {
-			badCardNum = stoi(response);
-		}
-		catch (...) {
-			std::cout << "Invalid argument. Didn't enter a number" << endl;
-			++errorcount;
-		}
-		if (badCardNum <= 5 && badCardNum >= 0) {
-			discardInput = true;
-		}
+			try {
+				badCardNum = stoi(response);
+			}
+			catch (...) {
+				std::cout << "Invalid argument. Didn't enter a number" << endl;
+				++errorcount;
+			}
+			if (badCardNum <= 5 && badCardNum >= 0) {
+				discardInput = true;
+			}
 
 
-		else {
-			std::cout << "Invalid argument. Not a number between 1-5" << endl;
-			++errorcount;
+			else {
+				std::cout << "Invalid argument. Not a number between 1-5" << endl;
+				++errorcount;
 
-		}
+			}
 
-		if (errorcount > 5) {
-			throw "too many errors trying to enter the number of cards to discard";
+			if (errorcount > 5) {
+				throw "too many errors trying to enter the number of cards to discard";
 
-			break;
+				break;
 
-		}
-
-	}
-
-	// now we need to take in which specific card to discard from the player hand
-
-	bool cardDiscardInput = false;
-	if (badCardNum == 5) {
-		for (int i = 0; i<5; ++i) {
-			Card discardCard = player.playerHand[0];
-			discard_deck.add_card(discardCard);
-			player.playerHand.remove_card(0);
-			--badCardNum;
-		}
-	}
-	//while (cardDiscardInput == false && badCardNum > 0) {
-	while (badCardNum > 0) {
-		int error = 0;
-
-		std::cout << "Which card(s) do you want to discard? Enter the position one at a time. " << endl;
-
-		std::string cardPosResponse;
-		std::cin >> cardPosResponse;
-		size_t cardPos = -1;
-		try {
-			cardPos = stoi(cardPosResponse);
-		}
-		catch (...) {
-			std::cout << "invalid argument" << endl;
-		}
-		if (cardPos < (unsigned int)player.playerHand.size() && cardPos >= 0) {
-			//cardDiscardInput = true;
-			Card discardCard = player.playerHand[cardPos];
-			discard_deck.add_card(discardCard);
-			player.playerHand.remove_card(cardPos);
-			--badCardNum;
+			}
 
 		}
-		else {
-			std::cout << "Invalid input. Not a valid card position." << endl;
-			++error;
+
+		// now we need to take in which specific card to discard from the player hand
+
+		bool cardDiscardInput = false;
+		if (badCardNum == 5) {
+			for (int i = 0; i < 5; ++i) {
+				Card discardCard = player.playerHand[0];
+				discard_deck.add_card(discardCard);
+				player.playerHand.remove_card(0);
+				--badCardNum;
+			}
+		}
+		//while (cardDiscardInput == false && badCardNum > 0) {
+		while (badCardNum > 0) {
+			int error = 0;
+
+			std::cout << "Which card(s) do you want to discard? Enter the position one at a time. " << endl;
+
+			std::string cardPosResponse;
+			std::cin >> cardPosResponse;
+			size_t cardPos = -1;
+			try {
+				cardPos = stoi(cardPosResponse);
+			}
+			catch (...) {
+				std::cout << "invalid argument" << endl;
+			}
+			if (cardPos < (unsigned int)player.playerHand.size() && cardPos >= 0) {
+				//cardDiscardInput = true;
+				Card discardCard = player.playerHand[cardPos];
+				discard_deck.add_card(discardCard);
+				player.playerHand.remove_card(cardPos);
+				--badCardNum;
+
+			}
+			else {
+				std::cout << "Invalid input. Not a valid card position." << endl;
+				++error;
+
+			}
+			if (error > 10) {
+				throw " too many errors while trying to decide which card to discard";
+				break;
+			}
+
 
 		}
-		if (error > 10) {
-			throw " too many errors while trying to decide which card to discard";
-			break;
-		}
-
-
 	}
 	return 0;
 }
@@ -121,7 +122,7 @@ int FiveCardDraw::before_round() {
 	folded_players = 0;
 	int ante = 1;
 	for (auto a : playervec) {
-		if (a->chipCount >= ante) {
+		if (a->chipCount >= (unsigned int) ante) {
 			a->bet_put_in = 0;
 			// revert all folded player to unfold position
 			a->fold = false;
@@ -153,6 +154,11 @@ int FiveCardDraw::before_round() {
 		if (checks == playervec.size()) {
 			break;
 		}
+		//MW std::cout << "game bet is: " << game_bet << endl;
+		//MW std::cout << (*playervec[0]).playerName << " bet amount is: " << (*playervec[0]).bet_put_in << endl;
+		//MW std::cout << (*playervec[1]).playerName << " bet amount is: " << (*playervec[1]).bet_put_in << endl;
+		//MW std::cout << (*playervec[2]).playerName << " bet amount is: " << (*playervec[2]).bet_put_in << endl;
+
 		bet(*playervec[pos]);
 		if (pos + 1 == playervec.size()) {
 			pos = 0;
@@ -162,7 +168,7 @@ int FiveCardDraw::before_round() {
 		else {
 			pos = (pos + 1) % playervec.size();
 		}
-		if (bet_leader != nullptr) {
+		if (bet_leader != nullptr) { 
 			if ((*playervec[pos]).playerName == (*bet_leader).playerName) {
 				around = true;
 			}
@@ -171,16 +177,31 @@ int FiveCardDraw::before_round() {
 	if (allFold == false) {
 		//reset pos to postDealer
 		pos = postDealer;
-		int totalCards = 5 * playervec.size();
+		int playernum = 0;
+		for (size_t i = 0; i < playervec.size(); ++i) {
+			if ((*playervec[i]).fold == false) {
+				++playernum;
+			}
+		}
+		int totalCards = 5 * playernum;
 		while (totalCards > 0) {
 			// now deal the card when there are still cards to deal.
-			(playervec[pos])->playerHand << main_deck;
-			pos = (pos + 1) % playervec.size();
-			--totalCards;
-
+			if ((*playervec[pos]).fold == false) {
+				(playervec[pos])->playerHand << main_deck;
+				pos = (pos + 1) % playervec.size();
+				--totalCards;
+			}
+			else {
+				pos = (pos + 1) % playervec.size();
+			}
 		}
-
-
+		//int playerfold = 0;
+		//for (size_t i = 0; i < playervec.size(); ++i) {
+		//	if ((*playervec[i]).fold == false) {
+		//		++playerfold;
+		//	}
+		//}
+		//std::cout << "The number of player's that didn't fold " << playerfold << endl;
 		vector<std::shared_ptr<Player>>::iterator posIter = (playervec.begin() + (postDealer % playervec.size()));
 		for (unsigned int i = 0; i < playervec.size(); ++i) {
 			try {
@@ -209,6 +230,10 @@ void FiveCardDraw::bet(Player &p) {
 		allFold = true;
 		return;
 	}
+	if (p.fold == true) {
+		return;
+	}
+
 	// a bool indicator whether this player has finished or not 
 
 	bool playerroundfinished = false;
@@ -240,7 +265,7 @@ void FiveCardDraw::bet(Player &p) {
 			else if (action == "call") {
 				//if not enough money to call, going all in 
 				if (p.chipCount <= game_bet - p.bet_put_in) {
-					p.bet_put_in += p.chipCount;
+					//p.bet_put_in += p.chipCount;
 					add_pot(p, p.chipCount);
 					playerroundfinished = true;
 					std::cout << p.playerName << ": don't have enough money to call, going all in for you " << std::endl;
@@ -249,7 +274,7 @@ void FiveCardDraw::bet(Player &p) {
 				else {
 					// now just call regularly 
 					int betAmount = game_bet - p.bet_put_in;
-					p.bet_put_in += betAmount;
+					//p.bet_put_in += betAmount;
 					add_pot(p, betAmount);
 					std::cout << p.playerName << ", you chose to call, putting in extra " << betAmount << " chips for you" << endl;
 					playerroundfinished = true;
@@ -260,7 +285,7 @@ void FiveCardDraw::bet(Player &p) {
 			else if (action == "reraise") {
 				// player trying to reraise another one chip, checking their pot 
 				if (p.chipCount < (game_bet - p.bet_put_in) + 1) {
-					p.bet_put_in += p.chipCount;
+					//p.bet_put_in += p.chipCount;
 					add_pot(p, p.chipCount);
 					playerroundfinished = true;
 
@@ -272,7 +297,7 @@ void FiveCardDraw::bet(Player &p) {
 
 				else if (p.chipCount == (game_bet - p.bet_put_in) + 1) {
 					// reraise success, but already all in since no more chips left
-					p.bet_put_in += p.chipCount;
+					//p.bet_put_in += p.chipCount;
 					add_pot(p, p.chipCount);
 					playerroundfinished = true;
 					++game_bet;
@@ -285,7 +310,7 @@ void FiveCardDraw::bet(Player &p) {
 				else {
 					// reraise success, 
 					int betAmount = (game_bet - p.bet_put_in) + 1;
-					p.bet_put_in += betAmount;
+					//p.bet_put_in += betAmount;
 					add_pot(p, betAmount); 
 					playerroundfinished = true;
 					++game_bet;
@@ -302,7 +327,7 @@ void FiveCardDraw::bet(Player &p) {
 
 				// player trying to reraise another one chip, checking their pot 
 				if (p.chipCount < (game_bet - p.bet_put_in) + 2) {
-					p.bet_put_in += p.chipCount;
+					//p.bet_put_in += p.chipCount;
 					add_pot(p, p.chipCount);
 					playerroundfinished = true;
 
@@ -318,7 +343,7 @@ void FiveCardDraw::bet(Player &p) {
 
 				else if (p.chipCount == (game_bet - p.bet_put_in) + 2) {
 					// reraise success, but already all in since no more chips left
-					p.bet_put_in += p.chipCount;
+					//p.bet_put_in += p.chipCount;
 					add_pot(p, p.chipCount);
 					playerroundfinished = true;
 					game_bet += 2;
@@ -331,7 +356,7 @@ void FiveCardDraw::bet(Player &p) {
 				else {
 					// reraise success, 
 					int betAmount = (game_bet - p.bet_put_in) + 2;
-					p.bet_put_in += betAmount;
+					//p.bet_put_in += betAmount;
 					add_pot(p, betAmount);
 					playerroundfinished = true;
 					game_bet += 2;
@@ -389,7 +414,7 @@ void FiveCardDraw::bet(Player &p) {
 				add_pot(p, 1);
 				std::cout << p.playerName << ": now the current bet is  " << game_bet << std::endl;
 				std::cout << "The current pot is: " << pot << endl;
-				p.bet_put_in += 1;
+				//p.bet_put_in += 1;
 				bet_leader = &p;
 
 				ifgamebet = true;
@@ -400,22 +425,23 @@ void FiveCardDraw::bet(Player &p) {
 			}
 			else if (action == "megabet") {
 				if (p.chipCount == 1) {
-
+					game_bet += 1;
+					add_pot(p, 1);
+					//p.bet_put_in += 1;
 					std::cout << p.playerName << ": chip not enough , betting one now" << std::endl;
 					action = "bet";
 					std::cout << p.playerName << ": now the current bet is  " << game_bet << std::endl;
 					std::cout << "The current pot is: " << pot << endl;
-					game_bet += 1;
-					add_pot(p, 1);
-					p.bet_put_in += 1;
+
 				}
 				else {
+					game_bet += 2;
+					add_pot(p, 2);
+					//p.bet_put_in += 2;
 					std::cout << p.playerName << ": bet two chip" << endl;
 					std::cout << p.playerName << ": now the current bet is  " << game_bet << std::endl;
 					std::cout << "The current pot is: " << pot << endl;
-					game_bet += 2;
-					add_pot(p, 2);
-					p.bet_put_in += 2;
+
 				}
 				bet_leader = &p;
 
@@ -436,6 +462,10 @@ void FiveCardDraw::bet(Player &p) {
 }
 
 int FiveCardDraw::turn(Player &p) {
+	if (p.fold) {
+		// this player is folding, end 
+		return 0;
+	}
 	int cardsNeeded = cardsPerHand - p.playerHand.size();
 	while (cardsNeeded != 0) {
 		if (main_deck.size() == 0) {
@@ -461,6 +491,10 @@ int FiveCardDraw::after_turn(Player &p) {
 }
 
 int FiveCardDraw::round() {
+	//MW std::cout << "prepre bet" << endl;
+	//MW std::cout << (*playervec[0]).playerHand << endl;
+	//MW std::cout << (*playervec[1]).playerHand << endl;
+	//MW std::cout << (*playervec[2]).playerHand << endl;
 	for (auto p : playervec) {
 
 		if (turn(*p) != 0) {
@@ -479,11 +513,20 @@ int FiveCardDraw::round() {
 		pos = dealer + 1;
 
 	}
-	Player * betIter = &(*playervec[pos]);
+	//MW std::cout << "pre bet" << endl;
+	//MW std::cout << (*playervec[0]).playerHand << endl;
+	//MW std::cout << (*playervec[1]).playerHand << endl;
+	//MW std::cout << (*playervec[2]).playerHand << endl;
+	//Player * betIter = &(*playervec[pos]);
 	for (size_t i = 0; i < playervec.size(); ++i) {
-		*betIter = *playervec[(pos + i) % playervec.size()];
-		bet(*betIter);
+		//*betIter = *playervec[(pos + i) % playervec.size()];
+		//bet(*betIter);
+		bet((*playervec[(pos + i) % playervec.size()]));
 	}
+	//MW std::cout << "post bet" << endl;
+	//MW std::cout << (*playervec[0]).playerHand << endl;
+	//MW std::cout << (*playervec[1]).playerHand << endl;
+	//MW std::cout << (*playervec[2]).playerHand << endl;
 
 	return 0;
 
@@ -508,7 +551,7 @@ int FiveCardDraw::after_round() {
 	std::vector<std::shared_ptr<Player>> tempplayervec;
 	for (size_t i = 0; i < playervec.size(); ++i) {
 		//Player did not fold
-		if ((*playervec[i]).fold) {
+		if (!((*playervec[i]).fold)) {
 			tempplayervec.push_back(playervec[i]);
 		}
 		else {
@@ -516,8 +559,10 @@ int FiveCardDraw::after_round() {
 				<< " losses with a current chipCount" << (playervec[i])->chipCount << endl;
 		}
 	}
-
+	//MW std::cout << "reached1" << endl;
+	//MW std::cout << tempplayervec.size() << endl;
 	sort(tempplayervec.begin(), tempplayervec.end(), FiveCardDraw::handCompare);
+	//MW std::cout << "reached2" << endl;
 	auto winner = tempplayervec.begin();
 	int ties = 0; //number of Players that tied
 	for (auto player = tempplayervec.begin(); player != tempplayervec.end(); ++player) {
