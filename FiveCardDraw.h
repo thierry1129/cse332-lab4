@@ -43,6 +43,7 @@ public:
 	virtual int after_turn(Player &p);
 	virtual int round();
 	virtual int after_round();
+	virtual int allFoldWinner();
 	static bool handCompare(std::shared_ptr<Player> a, std::shared_ptr<Player> b);
 
 };
