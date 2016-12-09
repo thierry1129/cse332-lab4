@@ -122,8 +122,8 @@ int FiveCardDraw::before_round() {
 	pot = 0;
 	ifgamebet = false;
 	around = false;
-	bool allFold = false;
-	unsigned int checks = 0;
+	allFold = false;
+	checks = 0;
 	bet_leader = nullptr;
 	pot = 0;
 	folded_players = 0;
@@ -158,7 +158,7 @@ int FiveCardDraw::before_round() {
 	size_t pos = postDealer;
 
 	while ((!around || bet_leader != nullptr) && allFold == false) {
-		if (checks == playervec.size() - folded_players) {
+		if (checks == (playervec.size() - folded_players)) {
 			break;
 		}
 		//MW std::cout << "game bet is: " << game_bet << endl;
