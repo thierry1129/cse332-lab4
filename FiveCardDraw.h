@@ -20,7 +20,6 @@ class FiveCardDraw : public Game {
 
 protected:
 
-	size_t dealer;
 	Deck discard_deck;
 	Deck main_deck;
 	// this is an int tracking the current bet on table
