@@ -120,6 +120,7 @@ int FiveCardDraw::before_round() {
 	pot = 0;
 	folded_players = 0;
 	int ante = 1;
+	game_bet = ante;
 	for (auto a : playervec) {
 		if (a->chipCount >= ante) {
 
@@ -146,11 +147,28 @@ int FiveCardDraw::before_round() {
 		pos = dealer + 1;
 
 	}
+	
+	
+	int n = 0;
+	bool around = false;
+	
+	while (!around || bet_leader != nullptr) {
+
+		bet(*playervec[n]);
+		if (n + 1 == playervec.size()) {
+			around = true;
+		}
+
+		n = (n + 1) % playervec.size();
+
+	}
+
 	// need to ask player for bet before dealing them cards
 	// because this is bet phase number one 
 
 	// this couldbe wrong, when be
 	//*bet_leader = *playervec[pos];
+	/*
 	Player * betIter = &(*playervec[pos]);
 	for (size_t i = 0; i < playervec.size(); ++i) {
 		*betIter = *playervec[(pos + i) % playervec.size()];
@@ -162,7 +180,7 @@ int FiveCardDraw::before_round() {
 	//	}
 	//}
 	
-	
+	*/
 	int totalCards = 5 * playervec.size();
 	while (totalCards > 0) {
 
