@@ -41,10 +41,15 @@ public:
 	virtual int before_round() = 0;
 	virtual int round() = 0;
 	virtual int after_round() = 0;
+	virtual int allFoldWinner() = 0;
 	virtual void add_pot(Player& p, unsigned int chipNum);
+	virtual void anteUp(Player& p);
 	virtual void bankrupt(Player& p);
 	int size();
 	bool ifgamebet = false;
+	bool around = false;
+	bool allFold = false;
+	unsigned int checks = 0;
 };
 
 
