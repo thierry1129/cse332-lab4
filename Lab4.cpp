@@ -90,9 +90,13 @@ int main(int argc, char* argv[]) {
 						gameInst->allFoldWinner();
 					}
 					else {
+						gameInst->around = false;
+						gameInst->checks = 0;
 						gameInst->round();
 						gameInst->after_round();
+						gameInst->around = false;
 						gameInst->checks = 0;
+						//gameInst->dealer = (gameInst->dealer + 1) % gameInst->size();
 					}
 
 					if (gameInst->size() < 2) {
