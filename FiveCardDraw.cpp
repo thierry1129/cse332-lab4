@@ -118,6 +118,13 @@ int FiveCardDraw::before_turn(Player &player) {
 int FiveCardDraw::before_round() {
 // before each round, we need to clear up everything, so we
 	// need to set the pot equal to zero
+	game_bet = 0;
+	pot = 0;
+	ifgamebet = false;
+	around = false;
+	bool allFold = false;
+	unsigned int checks = 0;
+	bet_leader = nullptr;
 	pot = 0;
 	folded_players = 0;
 	int ante = 1;
