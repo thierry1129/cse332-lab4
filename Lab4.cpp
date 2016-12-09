@@ -7,6 +7,7 @@
 #include "FiveCardDraw.h"
 #include <string>
 #include <iostream>
+#include <set>
 
 using namespace std;
 
@@ -19,6 +20,24 @@ int main(int argc, char* argv[]) {
 	if (argc < minimumArguments) {
 		return 23; //not enough arguments passed in
 	}
+    
+    int playerCount = argc - 2;
+    std::set<string> uniq{ argv+2, argv + argc };
+    /*
+     cout << "set size: " << uniq.size() << endl;
+     cout << "player count: " << playerCount << endl;
+     set<string>::iterator iter;
+     for (iter = uniq.begin(); iter != uniq.end(); ++iter) {
+     cout << *iter << " ";
+     }
+     cout << endl;
+     */
+    if (uniq.size() != playerCount) {
+        //throw "cannot have players with the same name in game, please restart with new names.";
+        cout << "players cannot have same name, please restart with new names." << endl;
+        return 95;
+    }
+    
 	programName = argv[0];
 
 	FiveCardDraw cardGame;
