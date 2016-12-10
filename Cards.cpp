@@ -239,7 +239,7 @@ Hand check7Hand(Hand &prehand) {
 	//std::vec
 	for (int i = 0; i < n; ++i) { people.push_back(i); }
 	go(0, k);
-
+	//std::cout << "Check7Hand" << endl;
 	// v2 is a vector of differnent vectors 12345, 12346----they are;
 	//std::cout << "test1" << endl; - MW
 	for (const std::vector<int> &v : v2)
@@ -260,16 +260,43 @@ Hand check7Hand(Hand &prehand) {
 		//std::cout << x << ' ';
 		//std::cout << std::endl;
 	}
+	//std::cout << "Check7Hand2" << endl;
 	//std::cout << "test5" << endl; - MW
 	//std::cout << handvec[0] << handvec[0].handInt << endl; - MW
 	//std::cout << handvec[20] << handvec[0].handInt << endl; - MW
+	//std::cout << "Hand vec size is " << handvec.size() << endl;
+
+	//for (size_t i = 0; i < handvec.size(); ++i) {
+	//	std::cout << "Check7Hand for loop print" << endl;
+	//	std::cout << handvec[i].size() << endl;
+	//	std::cout << handvec[i] << endl;
+	//}
+
+
+	// -MWstd:cout << "HANDVEC SIZE" << handvec.size() << endl;
+	try {
 
 
 
 
-	std::sort(handvec.begin(), handvec.end(), poker_rank);
-	//std::cout << "test6" << endl; - MW
 
+		// -MWstd::cout << "working " << endl;
+		std::sort(handvec.begin(), handvec.end(), poker_rank);
+		// -MWstd::cout << "working " << endl;
+	}
+	catch (const std::exception &exc) {
+		std::cout << exc.what();
+		std::cout << "caught" << endl;
+	}
+	catch (...) {
+	// -MW	std::cout << "caught" << endl;
+
+	}
+	// -MW std::cout << "test6" << endl; - MW
+	//std::cout << handvec[20] << endl;
+	people.clear();
+	combination.clear();
+	v2.clear();
 	return handvec[0];
 
 }
@@ -418,8 +445,55 @@ Hand checkHand(Hand &prehand) {
 
 
 
-bool poker_rank(const Hand& a, const Hand& b) {
+bool poker_rank(Hand& a, Hand& b) {
+	// -MWstd::cout << a << endl;
+	// -MWstd::cout << b << endl;
+	//bool equal = false;
+	//if (a.cardvec.size() != b.cardvec.size()) {
+	//	equal = false;
+	//}
+	//else {
+	//	auto ca = a.cardvec.begin();
+	//	auto cb = b.cardvec.begin();
 
+	//	while (ca != a.cardvec.end()) {
+	//		if (!((*ca).rank == (*cb).rank)) {
+	//			equal = false;
+	//		}
+	//		ca++;
+	//		cb++;
+	//	}
+	//	equal = true;
+	//}
+	//
+	//if (equal) {
+	//	//std::cout << "equal" << endl;
+	//	return false;
+	//}
+
+	bool equal = true;
+	if (a.cardvec.size() == b.cardvec.size()) {
+		auto ca = a.cardvec.begin();
+		auto cb = b.cardvec.begin();
+
+		while (ca != a.cardvec.end()) {
+			if ((*ca).rank != (*cb).rank) {
+				equal = false;
+			}
+			ca++;
+			cb++;
+		}
+		if (equal) {
+			for (int i = 0; i < 5; ++i) {
+				if (a.cardvec[i].suit != b.cardvec[i].suit) {
+					// -MW std::cout << (a.cardvec[i].suit > b.cardvec[i].suit) << endl;
+					return a.cardvec[i].suit > b.cardvec[i].suit;
+				}
+			}
+			return false;
+			//return a.cardvec[0].suit > b.cardvec[0].suit;
+		}
+	}
 
 	if (a.handInt == b.handInt) {
 		//cout << "the same is " << a.handInt << "and " << b.handInt << "and the result is " << (a.handInt > b.handInt) << endl;
@@ -427,11 +501,14 @@ bool poker_rank(const Hand& a, const Hand& b) {
 		//if it is a straight flush or straight , sort by the highest card
 		if (a.handInt == 9 || a.handInt == 5)
 		{
+			// -MWstd::cout << "9 or 5" << endl;
+
 			return (a.cardvec[4].rank > b.cardvec[4].rank);
 
 		}
 		//four of a kind or three of a kind, just compare the middle card
 		else if (a.handInt == 8 || a.handInt == 4) {
+			// -MW std::cout << "8 or 4" << endl;
 
 			Card middlea = a.cardvec[2];
 
@@ -444,6 +521,8 @@ bool poker_rank(const Hand& a, const Hand& b) {
 		}
 		//full house, three cards first, then two cards.
 		else if (a.handInt == 7) {
+			// -MW std::cout << "7" << endl;
+
 			Card middlea = a.cardvec[2];
 
 			Card middleb = b.cardvec[2];
@@ -467,22 +546,28 @@ bool poker_rank(const Hand& a, const Hand& b) {
 
 
 		else if (a.handInt == 6 || a.handInt == 1) {
+			// -MW std::cout << "6 or 1" << endl;
 			//right now it is a flush,, or a high card check from the last position in the card array and if encounter any card from a smaller than b, return false, break
 
 			//for(auto x = a.cards.end();x>0;x--){
-			for (unsigned i = a.cardvec.size(); i-- > 0; ) {
+			for (int i = (int) (a.cardvec.size() - 1); i>= 0; i--) {
+				// -MW std::cout << "loop" << endl;
+				// -MW std::cout << i << endl;
 
 				if (a.cardvec[i].rank < b.cardvec[i].rank) {
+					// -MW std::cout << "high card false" << endl;
 					return false;
-					break;
 				}
 
 
 			}
+			// -MW std::cout << "high card true" << endl;
+
 			return true;
 
 		}
 		else if (a.handInt == 3) {
+			// -MW std::cout << "3" << endl;
 
 			//cout << "gotyou" << endl;
 
@@ -613,18 +698,23 @@ bool poker_rank(const Hand& a, const Hand& b) {
 
 			if (apair.rank == bpair.rank) {
 
-				for (int i = 4; i-- > 0; ) {
+				for (int i = 4; i>= 0; --i) {
 
 					if (a.cardvec[i].rank < b.cardvec[i].rank) {
+						// -MW std::cout << "false" << endl;
 						return false;
-						break;
 					}
 
 				}
+				// -MW std::cout << "true" << endl;
 				return true;
 			}
-			else return (apair > bpair);
+			
 
+			else {
+				// -MW std::cout << "great than or equal" << endl;
+				return (apair > bpair);
+			}
 
 
 		}
@@ -632,7 +722,7 @@ bool poker_rank(const Hand& a, const Hand& b) {
 
 		else {
 
-
+			// -MW std::cout << "no catch" << endl;
 			return false;
 		}
 
@@ -647,6 +737,7 @@ bool poker_rank(const Hand& a, const Hand& b) {
 
 
 
+		// -MW std::cout << "no catch2" << endl;
 
 		return (a.handInt > b.handInt);
 	}
