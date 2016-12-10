@@ -711,7 +711,7 @@ int SevenCardStud::before_round() {
 	folded_players = 0;
 	int ante = 1;
 	for (auto a : playervec) {
-		if (a->chipCount >= ante) {
+		if (a->chipCount >= (unsigned int)ante) {
 			a->bet_put_in = 0;
 			// revert all folded player to unfold position
 			a->fold = false;
