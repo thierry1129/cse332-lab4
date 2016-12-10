@@ -7,22 +7,20 @@
 #include <iostream>
 #include <random>
 
-
-
-
 class Deck;
 class FiveCardDraw;
-class SevenCardStud;
+class SevenCardStud; //added lab4
 
 class Hand {
     
     friend std::ostream& operator<<(std::ostream& out, const Hand& h);
     friend Hand& operator<<(Hand&h, Deck& d);
-    friend bool Hand::poker_rank(const Hand& a, const Hand& b);
+    friend bool Hand::poker_rank(Hand& a, Hand& b);
+    //friend bool Hand::sevenCard_poker_rank(Hand& a, Hand& b); //added lab4
     friend Hand checkHand(Hand &cards);
+    friend Hand check7Hand(Hand &cards); //added lab4
     friend FiveCardDraw;
     friend SevenCardStud;
-	friend Hand check7Hand(Hand &prehand);
     
 public:
     
@@ -48,12 +46,10 @@ public:
 private:
     std::vector<Card> cardvec;
     
-    
-    
-    
 };
 
 std::ostream& operator<<(std::ostream& out, const Hand& h);
-bool poker_rank(const Hand& a, const Hand& b);
+bool poker_rank(Hand& a, Hand& b);
+//bool sevenCard_poker_rank(Hand& a, Hand& b); //added to check seven card stud
+Hand check7Hand(Hand &cards);
 #endif
-
