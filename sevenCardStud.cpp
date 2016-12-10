@@ -307,7 +307,7 @@ int SevenCardStud::firstTurnCard() {
 		--totalCards;
 	}
 
-       pos = 0;
+	pos = 0;
 	if (dealer != (playervec.size() - 1)) {
 		pos = dealer + 1;
 	}
@@ -365,7 +365,7 @@ int SevenCardStud::firstTurnCard() {
 
 int SevenCardStud::firstTurn(Player &p) {
 
-	
+
 	size_t pos = 0;
 	if (dealer != (playervec.size() - 1)) {
 		pos = dealer + 1;
@@ -375,10 +375,10 @@ int SevenCardStud::firstTurn(Player &p) {
 
 	while (numplayers > 0) {
 		// print delat cards
-	
-	
 
-		
+
+
+
 
 		cout << (*playervec[pos]).playerHand << endl;
 		cout << "player " << (*playervec[pos]).playerName << "has a " << (*playervec[pos]).playerHand.cardvec.size();
@@ -395,7 +395,7 @@ int SevenCardStud::firstTurn(Player &p) {
 
 	// need to ask player for bet before dealing them cards
 	// because this is bet phase number one 
-	 pos = postDealer;
+	pos = postDealer;
 
 	while ((!around || bet_leader != nullptr) && allFold == false) {
 		if (checks == playervec.size()) {
@@ -418,10 +418,10 @@ int SevenCardStud::firstTurn(Player &p) {
 		}
 	}
 
-	
+
 	return 0;
 }
-int SevenCardStud::twoThrFourTurnCard(){
+int SevenCardStud::twoThrFourTurnCard() {
 	checks = 0;
 	int posa = 0;
 	if (dealer != (playervec.size() - 1)) {
@@ -456,7 +456,7 @@ int SevenCardStud::twoThrFourTurnCard(){
 		cout << "player " << (*playervec[pos]).playerName << "has a " << (*playervec[pos]).playerHand.cardvec.size();
 		pos = (pos + 1) % playervec.size();
 
-	//	cout << "second executed" << round << endl;
+		//	cout << "second executed" << round << endl;
 		numplayers--;
 	}
 
@@ -502,12 +502,12 @@ int SevenCardStud::twoThrFourTurnCard(){
 int SevenCardStud::twoThrFourTurn(Player &p) { //current while loop structure runs the 2nd, 3rd, and 4th rounds in one method call
 	int round = 3;  //could also be changed to run once, and call it thrice
 	while (round <= 5) {
-		
+
 
 		//print card
 
 		cout << "second executed" << round << endl;
-        size_t		pos = 0;
+		size_t		pos = 0;
 		if (dealer != (playervec.size() - 1)) {
 			pos = dealer + 1;
 		}
@@ -515,7 +515,7 @@ int SevenCardStud::twoThrFourTurn(Player &p) { //current while loop structure ru
 		int numplayers = playervec.size();
 
 		while (numplayers > 0) {
-			
+
 
 
 
@@ -538,11 +538,11 @@ int SevenCardStud::twoThrFourTurn(Player &p) { //current while loop structure ru
 
 
 
-		
+
 
 		// need to ask player for bet before dealing them cards
 		// because this is bet phase number one 
-	size_t posc = postDealer;
+		size_t posc = postDealer;
 
 		while ((!around || bet_leader != nullptr) && allFold == false) {
 			if (checks == playervec.size()) {
@@ -584,7 +584,7 @@ int SevenCardStud::finalTurnCard() {
 		pos = (pos + 1) % playervec.size();
 		--totalCards;
 	}
-		pos = 0;
+	pos = 0;
 	if (dealer != (playervec.size() - 1)) {
 		pos = dealer + 1;
 	}
@@ -643,9 +643,9 @@ int SevenCardStud::finalTurnCard() {
 
 }
 int SevenCardStud::finalTurn(Player &p) { //one more final card, face down, and a round of betting
-	
-	// print delat cards
-size_t	pos = 0;
+
+										  // print delat cards
+	size_t	pos = 0;
 	if (dealer != (playervec.size() - 1)) {
 		pos = dealer + 1;
 	}
@@ -674,11 +674,11 @@ size_t	pos = 0;
 
 
 
-	
+
 
 	// need to ask player for bet before dealing them cards
 	// because this is bet phase number one 
-	 pos = postDealer;
+	pos = postDealer;
 
 	while ((!around || bet_leader != nullptr) && allFold == false) {
 		if (checks == playervec.size()) {
@@ -735,37 +735,40 @@ int SevenCardStud::before_round() {
 int SevenCardStud::round() {
 
 
-firstTurnCard();
+	firstTurnCard();
 
-for (int a = 0; a < 3; ++a) {
-	twoThrFourTurnCard();
-}
-finalTurnCard();
+	for (int a = 0; a < 3; ++a) {
+		twoThrFourTurnCard();
+	}
+	finalTurnCard();
 
 
 
-	
-	
+
+
 
 	return 0;
 }
 
 bool SevenCardStud::handCompare(std::shared_ptr<Player> a, std::shared_ptr<Player> b) {
 	if (a == NULL) {
+
 		return false;
 
 	}
 	if (b == NULL) {
+
 		return true;
 	}
 	else {
+		// -MW std::cout << a->playerHand << endl;
+		// -MW std::cout << b->playerHand << endl;
 
 		Hand ah = check7Hand(a->playerHand);
 		Hand bh = check7Hand(b->playerHand);
 
 
-
-		return poker_rank(ah,bh);
+		return poker_rank(ah, bh);
 	}
 }
 
@@ -773,189 +776,185 @@ int SevenCardStud::after_round() {
 
 
 
-		std::vector<std::shared_ptr<Player>> tempplayervec;
-		for (size_t i = 0; i < playervec.size(); ++i) {
-			//Player did not fold
-			if (!(*playervec[i]).fold) {
-				tempplayervec.push_back(playervec[i]);
-			}
-			else {
-				std::cout << (playervec[i])->playerName << " folded. They have " << (playervec[i])->handWon << " wins and " << (playervec[i])->handLost
-					<< " losses with a current chipCount" << (playervec[i])->chipCount << std::endl;
-			}
+	std::vector<std::shared_ptr<Player>> tempplayervec;
+	for (size_t i = 0; i < playervec.size(); ++i) {
+		//Player did not fold
+		if (!(*playervec[i]).fold) {
+			tempplayervec.push_back(playervec[i]);
 		}
-		/*if (tempplayervec.size() <= 1 && ifgameend) {
-			std::cout << "everyone folded in the before round and you are the only one left so you won" << std::endl;
-			(*(*tempplayervec.begin())).handWon++;
-			(*(*tempplayervec.begin())).chipCount += pot;
-			pot = 0;
-			//	(*tempplayervec.begin())->
-			std::cout << (*(*tempplayervec.begin())).playerName << " has won and his winning time is " << (*(*tempplayervec.begin())).handWon;
-
-
+		else {
+			std::cout << (playervec[i])->playerName << " folded. They have " << (playervec[i])->handWon << " wins and " << (playervec[i])->handLost
+				<< " losses with a current chipCount" << (playervec[i])->chipCount << std::endl;
 		}
-
-
-		else {*/
-			sort(tempplayervec.begin(), tempplayervec.end(), SevenCardStud::handCompare);
-			auto winner = tempplayervec.begin();
-			int winnernum = 0; //number of Players that tied
-
-			std::vector<std::shared_ptr<Player>> winnerplayervec;
-			for (auto player = tempplayervec.begin(); player != tempplayervec.end(); ++player) {
-				//auto winner = tempplayervec.begin();
-				if (player == tempplayervec.begin()) {
-
-					++winnernum;
-
-					(*(*player)).handWon++;
-					//(*player)->chipCount += pot;
-					//pot = 0;
-					winnerplayervec.push_back(*player);
-					std::cout << (*player)->playerName << " wins, has " << (*player)->handWon << " wins and " << (*player)->handLost
-						<< " losses" << " handInt = " << (**player).playerHand.handInt << "with a current chipCount" << (**player).chipCount << std::endl << std::endl;
-
-				}
-
-
-				else {
-
-					Hand winnerhand = (*winner)->playerHand;
-					if ((*player)->playerHand == winnerhand) {
-						++winnernum;
-						winnerplayervec.push_back(*player);
-						std::cout << (*player)->playerName << " wins, has " << (*player)->handWon << " wins and " << (*player)->handLost
-							<< " losses" << " handInt = " << (**player).playerHand.handInt << "with a current chipCount" << (**player).chipCount << std::endl << std::endl;
-
-
-					}
-					else {
-						(*(*player)).handLost++;
-
-						std::cout << (*player)->playerName << " lost, has " << (*player)->handWon << " wins and " << (*player)->handLost << " losses" << " handInt = " << (**player).playerHand.handInt << endl << endl;
-
-					}
-
-
-
-
-
-
-
-
-				}
-
-
-
-				for (auto winp : winnerplayervec) {
-					(*winp).chipCount += pot / winnernum;
-
-				}
-
-				// collect cards from discard deck
-			}
-		//}
-		std::copy(discard_deck.cardvec.begin(), discard_deck.cardvec.end(), std::back_inserter(main_deck.cardvec));
-		discard_deck.cardvec.erase(discard_deck.cardvec.begin(), discard_deck.cardvec.end());
-
-
-
-		pot = 0;
-		for (auto player = tempplayervec.begin(); player != tempplayervec.end(); ++player) {
-			std::copy((*player)->playerHand.cardvec.begin(), (*player)->playerHand.cardvec.end(), std::back_inserter(main_deck.cardvec));
-			(*player)->playerHand.cardvec.erase((*player)->playerHand.cardvec.begin(), (*player)->playerHand.cardvec.end());
-		}
-
-		// collect cards from winner hand
-
-		// now finished processing the cards, , after game, time to remove players
-
-		bool leave = true;
-		std::cout << "Enter 'yes' to leave, 'no' to stay." << endl;
-
-		//FIXME not sure ifleave should be char * or string
-		string ifleave;
-		std::cin >> ifleave;
-		while (leave) {
-			if (ifleave == "yes") {
-				std::cout << "Enter the name of player leaving..." << endl;
-				string leavename;
-				//std::getline(std::cin, leavename);
-				std::cin >> leavename;
-				//trying to add a remove player method 
-
-				std::shared_ptr<Player> leaveplayer = find_player(leavename);// leavename.c_str());
-				if (leaveplayer != NULL) {
-
-					std::ofstream ofs(leavename + ".txt", std::ofstream::out);
-					ofs << "Name " << (*leaveplayer).playerName << endl;
-					ofs << "Wins " << (*leaveplayer).handWon << endl;
-					ofs << "Losses " << (*leaveplayer).handLost << endl;
-					ofs << "chipCount " << (*leaveplayer).chipCount << endl;
-					ofs.close();
-					for (std::vector<std::shared_ptr<Player>>::iterator p = playervec.begin(); p != playervec.end(); ++p) {
-						if ((*p)->playerName == leavename) {
-							playervec.erase(p);
-							ifleave = "no";
-							break;
-						}
-					}
-				}
-
-
-
-
-
-			}
-
-			else if (ifleave == "no") {
-				leave = false;
-			}
-
-			else {
-				std::cout << "Please enter 'yes' or 'no'." << endl;
-				std::cin >> ifleave;
-
-			}
-		}
-
-		// after finding out who wants to leave, we need to find out who wants to join 
-
-
-		bool dojoin = true;
-		while (dojoin) {
-			std::cout << endl << "Do any players wish to join the game? (yes/no)" << endl;
-			string join;
-			std::cin >> join;
-			if (join == "yes") {
-
-				std::cout << "Enter name of joining player..." << endl;
-				string joinname;
-				//std::getline(std::cin, joinname);
-				std::cin >> joinname;
-
-				std::shared_ptr<Player> joinplayer = find_player(joinname.c_str());
-				if (joinplayer != NULL) {
-					// same name exists in the game
-					std::cout << "User name exists, please restart the process and enter a different name." << endl;
-				}
-				else {
-
-					add_player(joinname.c_str());
-
-				}
-			}
-
-			else if (join == "no") {
-				dojoin = false;
-
-			}
-
-			else {
-				std::cout << "Enter 'yes' or 'no' to decide if joining." << endl;
-			}
-		}
-		++dealer;
-		dealer = dealer % playervec.size();
-		return 0;
 	}
+	/*if (tempplayervec.size() <= 1 && ifgameend) {
+	std::cout << "everyone folded in the before round and you are the only one left so you won" << std::endl;
+	(*(*tempplayervec.begin())).handWon++;
+	(*(*tempplayervec.begin())).chipCount += pot;
+	pot = 0;
+	//	(*tempplayervec.begin())->
+	std::cout << (*(*tempplayervec.begin())).playerName << " has won and his winning time is " << (*(*tempplayervec.begin())).handWon;
+
+
+	}
+
+
+	else {*/
+	//std::cout << "tempplayervec size" << tempplayervec.size() << endl;
+	sort(tempplayervec.begin(), tempplayervec.end(), SevenCardStud::handCompare);
+	//std::cout << "aftersort" << endl;
+	auto winner = tempplayervec.begin();
+	//std::cout << (*winner)->playerHand << " " << (*winner)->playerName << endl;
+	auto hand1 = check7Hand((*winner)->playerHand);
+	auto hand2 = check7Hand((*(winner + 1))->playerHand);
+	std::cout << hand1 << endl;
+	std::cout << hand2 << endl;
+	int winnernum = 0; //number of Players that tied
+	int ties = 0;
+	std::vector<std::shared_ptr<Player>> winnerplayervec;
+	//std::cout << "aftersort" << endl;
+	for (auto player = tempplayervec.begin(); player != tempplayervec.end(); ++player) {
+		std::cout << (**player).playerHand << endl;
+		//VERSION 3
+		//std::cout << (**player).playerHand << (**winner).playerHand << poker_rank((**player).playerHand, (**winner).playerHand) << endl;
+		if (poker_rank((**player).playerHand, (**winner).playerHand)) {
+			++((*player)->handWon);
+			(*player)->chipCount += pot;
+			pot = 0;
+			std::cout << (*player)->playerName << " wins, has " << (*player)->handWon << " wins and " << (*player)->handLost
+				<< " losses" << " handInt = " << (**player).playerHand.handInt << "with a current chipCount" << (**player).chipCount << endl;
+		}
+		else if (!(poker_rank((**player).playerHand, (**winner).playerHand)) && !(poker_rank((**winner).playerHand, (**player).playerHand))) {
+			++((*player)->handWon);
+			//if we haven't already determined the number of players that tied
+			if (ties == 0) {
+				auto iterplayer = player;
+				while (!(poker_rank((**iterplayer).playerHand, (**winner).playerHand)) && !(poker_rank((**winner).playerHand, (**iterplayer).playerHand))) {
+					++ties;
+					if (iterplayer == tempplayervec.end() -1 ) {
+						break;
+					}
+					++iterplayer;
+				}
+			}
+			(*player)->chipCount += pot / ties;
+			std::cout << (*player)->playerName << " wins, has " << (*player)->handWon << " wins and " << (*player)->handLost << " losses" << " handInt = " << (**player).playerHand.handInt << endl;
+		}
+		else {
+			(*(*player)).handLost++;
+			std::cout << (*player)->playerName << " lost, has " << (*player)->handWon << " wins and " << (*player)->handLost << " losses" << " handInt = " << (**player).playerHand.handInt << endl;
+		}
+
+
+		//for (auto winp : winnerplayervec) {
+		//	(*winp).chipCount += pot / winnernum;
+
+		//}
+
+		// collect cards from discard deck
+	}
+	//}
+	std::copy(discard_deck.cardvec.begin(), discard_deck.cardvec.end(), std::back_inserter(main_deck.cardvec));
+	discard_deck.cardvec.erase(discard_deck.cardvec.begin(), discard_deck.cardvec.end());
+
+
+
+	pot = 0;
+	for (auto player = tempplayervec.begin(); player != tempplayervec.end(); ++player) {
+		std::copy((*player)->playerHand.cardvec.begin(), (*player)->playerHand.cardvec.end(), std::back_inserter(main_deck.cardvec));
+		(*player)->playerHand.cardvec.erase((*player)->playerHand.cardvec.begin(), (*player)->playerHand.cardvec.end());
+	}
+
+	// collect cards from winner hand
+
+	// now finished processing the cards, , after game, time to remove players
+
+	bool leave = true;
+	std::cout << "Enter 'yes' to leave, 'no' to stay." << endl;
+
+	//FIXME not sure ifleave should be char * or string
+	string ifleave;
+	std::cin >> ifleave;
+	while (leave) {
+		if (ifleave == "yes") {
+			std::cout << "Enter the name of player leaving..." << endl;
+			string leavename;
+			//std::getline(std::cin, leavename);
+			std::cin >> leavename;
+			//trying to add a remove player method 
+
+			std::shared_ptr<Player> leaveplayer = find_player(leavename);// leavename.c_str());
+			if (leaveplayer != NULL) {
+
+				std::ofstream ofs(leavename + ".txt", std::ofstream::out);
+				ofs << "Name " << (*leaveplayer).playerName << endl;
+				ofs << "Wins " << (*leaveplayer).handWon << endl;
+				ofs << "Losses " << (*leaveplayer).handLost << endl;
+				ofs << "chipCount " << (*leaveplayer).chipCount << endl;
+				ofs.close();
+				for (std::vector<std::shared_ptr<Player>>::iterator p = playervec.begin(); p != playervec.end(); ++p) {
+					if ((*p)->playerName == leavename) {
+						playervec.erase(p);
+						ifleave = "no";
+						break;
+					}
+				}
+			}
+
+
+
+
+
+		}
+
+		else if (ifleave == "no") {
+			leave = false;
+		}
+
+		else {
+			std::cout << "Please enter 'yes' or 'no'." << endl;
+			std::cin >> ifleave;
+
+		}
+	}
+
+	// after finding out who wants to leave, we need to find out who wants to join 
+
+
+	bool dojoin = true;
+	while (dojoin) {
+		std::cout << endl << "Do any players wish to join the game? (yes/no)" << endl;
+		string join;
+		std::cin >> join;
+		if (join == "yes") {
+
+			std::cout << "Enter name of joining player..." << endl;
+			string joinname;
+			//std::getline(std::cin, joinname);
+			std::cin >> joinname;
+
+			std::shared_ptr<Player> joinplayer = find_player(joinname.c_str());
+			if (joinplayer != NULL) {
+				// same name exists in the game
+				std::cout << "User name exists, please restart the process and enter a different name." << endl;
+			}
+			else {
+
+				add_player(joinname.c_str());
+
+			}
+		}
+
+		else if (join == "no") {
+			dojoin = false;
+
+		}
+
+		else {
+			std::cout << "Enter 'yes' or 'no' to decide if joining." << endl;
+		}
+	}
+	++dealer;
+	dealer = dealer % playervec.size();
+	return 0;
+}
