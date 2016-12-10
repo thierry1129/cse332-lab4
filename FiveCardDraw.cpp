@@ -387,6 +387,7 @@ void FiveCardDraw::bet(Player &p) {
 		// bet will bet one chip, megabet bets two chips
 
 		if (p.chipCount == 0) {
+            ++checks;
 			std::cout << p.playerName << ": no more chips, must check" << std::endl;
 			return;
 		}
